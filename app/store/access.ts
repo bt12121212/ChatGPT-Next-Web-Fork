@@ -7,6 +7,7 @@ import { getClientConfig } from "../config/client";
 
 export interface AccessControlStore {
   accessCode: string;
+  accessCode2: string;
   token: string;
 
   needCode: boolean;
@@ -35,6 +36,7 @@ export const useAccessStore = create<AccessControlStore>()(
     (set, get) => ({
       token: "",
       accessCode: "",
+      accessCode2: "",
       needCode: true,
       hideUserApiKey: false,
       hideBalanceQuery: false,

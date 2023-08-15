@@ -33,6 +33,16 @@ export function AuthPage() {
         }}
       />
 
+      <input
+        className={styles["auth-input"]}
+        type="username"
+        placeholder={Locale.Auth.Input}
+        value={access.accessCode}
+        onChange={(e) => {
+          access.updateCode(e.currentTarget.value);
+        }}
+      />
+
       <div className={styles["auth-actions"]}>
         <IconButton
           text={Locale.Auth.Confirm}
