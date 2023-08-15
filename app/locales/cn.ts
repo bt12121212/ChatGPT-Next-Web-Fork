@@ -8,8 +8,9 @@ const cn = {
   },
   Auth: {
     Title: "需要密码",
-    Tips: "管理员开启了密码验证，请在下方填入访问码",
-    Input: "在此处填写访问码",
+    Tips: "欢迎使用尊闻行知，请登录。",
+    InputPassword: "密码：",
+    Inputusername: "用户名：",
     Confirm: "确认",
     Later: "稍后再说",
   },
