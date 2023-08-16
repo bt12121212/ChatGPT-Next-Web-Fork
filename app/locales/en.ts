@@ -12,6 +12,8 @@ const en: LocaleType = {
     Title: "Need Access Code",
     Tips: "Please enter access code below",
     Input: "access code",
+    InputPassword: "密码：",
+    Inputusername: "用户名：",
     Confirm: "Confirm",
     Later: "Later",
   },
