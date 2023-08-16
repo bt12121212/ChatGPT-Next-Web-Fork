@@ -9,6 +9,7 @@ const cn = {
   Auth: {
     Title: "需要密码",
     Tips: "欢迎使用尊闻行知，请登录。",
+    Input: "",
     InputPassword: "密码：",
     Inputusername: "用户名：",
     Confirm: "确认",
