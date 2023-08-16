@@ -24,7 +24,7 @@ export function AuthPage() {
       <div className={styles["auth-tips"]}>{Locale.Auth.Tips}</div>
 
       <input
-        className={styles["auth-input"]}
+        className={styles["auth-inputusername"]}
         type="username"
         placeholder={Locale.Auth.Inputusername}
         value={access.accessCode}
@@ -34,7 +34,7 @@ export function AuthPage() {
       />
 
       <input
-        className={styles["auth-input"]}
+        className={styles["auth-inputpassword"]}
         type="password"
         placeholder={Locale.Auth.InputPassword}
         value={access.accessCode}
