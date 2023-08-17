@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Path } from "../constant";
 import { useAccessStore } from "../store";
 import Locale from "../locales";
+import React, { useState, useEffect } from "react";
 
 import BotIcon from "../icons/bot.svg";
 
@@ -13,6 +14,44 @@ export function AuthPage() {
   const access = useAccessStore();
 
   const goHome = () => navigate(Path.Home);
+
+  // 分别保存用户名和密码
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  // 登录逻辑函数
+  const handleLogin = async () => {
+    try {
+      const response = await fetch(
+        "https://native-chow-30493.kv.vercel-storage.com/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization:
+              "Bearer AXcdASQgN2NkNGQyMzYtYjE5Mi00NGZmLWIxODItNmMyNzg3MjgxOWQwNzE5Zjk3ZjMyOWNhNDkyMmE0MWUzYTY1MTUxNjI5MjY=",
+          },
+          body: JSON.stringify({
+            username: username,
+            password: password,
+          }),
+        },
+      );
+
+      const data = await response.json();
+
+      // 根据你的后端的响应结构进行调整
+      if (data.valid) {
+        localStorage.setItem("token", data.token); // 保存token
+        goHome;
+      } else {
+        // 显示错误消息
+        console.error("登录失效、请重新登录");
+      }
+    } catch (error) {
+      console.error("登录失败:", error);
+    }
+  };
 
   return (
     <div className={styles["auth-page"]}>
@@ -27,27 +66,23 @@ export function AuthPage() {
         className={styles["auth-inputusername"]}
         type="username"
         placeholder={Locale.Auth.Inputusername}
-        value={access.accessCode}
-        onChange={(e) => {
-          access.updateCode(e.currentTarget.value);
-        }}
+        value={username}
+        onChange={(e) => setUsername(e.currentTarget.value)}
       />
 
       <input
         className={styles["auth-inputpassword"]}
         type="password"
         placeholder={Locale.Auth.InputPassword}
-        value={access.accessCode}
-        onChange={(e) => {
-          access.updateCode(e.currentTarget.value);
-        }}
+        value={password}
+        onChange={(e) => setPassword(e.currentTarget.value)}
       />
 
       <div className={styles["auth-actions"]}>
         <IconButton
           text={Locale.Auth.Confirm}
           type="primary"
-          onClick={goHome}
+          onClick={handleLogin}
         />
         <IconButton text={Locale.Auth.Later} onClick={goHome} />
       </div>

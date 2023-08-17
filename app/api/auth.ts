@@ -24,10 +24,62 @@ function parseApiKey(bearToken: string) {
   };
 }
 
-export function auth(req: NextRequest) {
-  const authToken = req.headers.get("Authorization") ?? "";
+async function fetchDB(
+  method: string,
+  body: any,
+): Promise<{ [key: string]: any }> {
+  try {
+    const response = await fetch(
+      "https://native-chow-30493.kv.vercel-storage.com/",
+      {
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization:
+            "Bearer AXcdASQgN2NkNGQyMzYtYjE5Mi00NGZmLWIxODItNmMyNzg3MjgxOWQwNzE5Zjk3ZjMyOWNhNDkyMmE0MWUzYTY1MTUxNjI5MjY=",
+        },
+        body: JSON.stringify(body),
+      },
+    );
 
-  // check if it is openai api key or user token
+    return await response.json();
+  } catch (error) {
+    return { error: true, msg: (error as Error).message };
+  }
+}
+
+export async function login(req: NextRequest) {
+  const requestBody = await req.json();
+  const username = requestBody.username;
+  const password = requestBody.password;
+
+  // Check username and password in the database
+  const user = await fetchDB("GET", { username: username });
+
+  if (!user || md5.hash(password) !== user.passwordHash) {
+    return { valid: false, error: "Invalid username or password" };
+  }
+
+  // Generate a new token
+  const token = md5.hash(new Date().toISOString() + username);
+
+  // Update tokens for the user
+  if (user.tokens.length >= 10) {
+    user.tokens.shift();
+  }
+  user.tokens.push(token);
+
+  const IP = getIP(req);
+  user.loginHistory.push({ time: new Date().toLocaleString(), IP: IP });
+
+  // Update the user in the database
+  await fetchDB("PUT", user);
+
+  return { valid: true, token: token };
+}
+
+export async function auth(req: NextRequest) {
+  const authToken = req.headers.get("Authorization") ?? "";
   const { accessCode, apiKey: token } = parseApiKey(authToken);
 
   const hashedCode = md5.hash(accessCode ?? "").trim();
@@ -46,8 +98,16 @@ export function auth(req: NextRequest) {
     };
   }
 
-  // if user does not provide an api key, inject system api key
-  if (!token) {
+  if (token) {
+    // Check if the token exists in the database for the given user
+    const user = await fetchDB("GET", { token: token });
+    if (user && user.tokens.includes(token)) {
+      return {
+        error: false,
+      };
+    }
+  } else {
+    // if user does not provide an api key, inject system api key
     const apiKey = serverConfig.apiKey;
     if (apiKey) {
       console.log("[Auth] use system api key");
@@ -55,8 +115,6 @@ export function auth(req: NextRequest) {
     } else {
       console.log("[Auth] admin did not provide an api key");
     }
-  } else {
-    console.log("[Auth] use user api key");
   }
 
   return {
