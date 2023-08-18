@@ -1,6 +1,6 @@
 import styles from "./auth.module.scss";
 import { IconButton } from "./button";
-
+import { performLogin } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 import { Path } from "../constant";
 import { useAccessStore } from "../store";
@@ -12,7 +12,6 @@ import BotIcon from "../icons/bot.svg";
 export function AuthPage() {
   const navigate = useNavigate();
   const access = useAccessStore();
-
   const goHome = () => navigate(Path.Home);
 
   // 分别保存用户名和密码
@@ -22,34 +21,19 @@ export function AuthPage() {
   // 登录逻辑函数
   const handleLogin = async () => {
     try {
-      const response = await fetch(
-        "https://native-chow-30493.kv.vercel-storage.com/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization:
-              "Bearer AXcdASQgN2NkNGQyMzYtYjE5Mi00NGZmLWIxODItNmMyNzg3MjgxOWQwNzE5Zjk3ZjMyOWNhNDkyMmE0MWUzYTY1MTUxNjI5MjY=",
-          },
-          body: JSON.stringify({
-            username: username,
-            password: password,
-          }),
-        },
-      );
-
-      const data = await response.json();
+      const data = await performLogin(username, password);
 
       // 根据你的后端的响应结构进行调整
       if (data.valid) {
         localStorage.setItem("token", data.token); // 保存token
-        goHome;
+        goHome();
       } else {
         // 显示错误消息
-        console.error("登录失效、请重新登录");
+        alert("登录失效、请重新登录");
       }
-    } catch (error) {
-      console.error("登录失败:", error);
+    } catch (error: any) {
+      console.error("登录失败:", error.msg || error);
+      alert("登录失败");
     }
   };
 

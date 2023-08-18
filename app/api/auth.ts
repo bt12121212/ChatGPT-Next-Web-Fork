@@ -48,6 +48,31 @@ async function fetchDB(
   }
 }
 
+// 新增的登录函数
+export async function performLogin(username: string, password: string) {
+  try {
+    const response = await fetch(
+      "https://native-chow-30493.kv.vercel-storage.com/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization:
+            "Bearer AXcdASQgN2NkNGQyMzYtYjE5Mi00NGZmLWIxODItNmMyNzg3MjgxOWQwNzE5Zjk3ZjMyOWNhNDkyMmE0MWUzYTY1MTUxNjI5MjY=",
+        },
+        body: JSON.stringify({
+          username: username,
+          password: password,
+        }),
+      },
+    );
+
+    return await response.json();
+  } catch (error) {
+    return { error: true, msg: (error as Error).message };
+  }
+}
+
 export async function login(req: NextRequest) {
   const requestBody = await req.json();
   const username = requestBody.username;
