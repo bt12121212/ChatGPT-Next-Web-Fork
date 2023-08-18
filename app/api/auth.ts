@@ -3,6 +3,15 @@ import { getServerSideConfig } from "../config/server";
 import md5 from "spark-md5";
 import { ACCESS_CODE_PREFIX } from "../constant";
 
+const SERVER_CONFIG = getServerSideConfig();
+if (!SERVER_CONFIG.dbUrl || !SERVER_CONFIG.dbToken) {
+  throw new Error(
+    "Database URL or Token is not defined in environment variables.",
+  );
+}
+const DB_URL = SERVER_CONFIG.dbUrl as string; // 类型断言
+const DB_TOKEN = SERVER_CONFIG.dbToken as string; // 类型断言
+
 function getIP(req: NextRequest) {
   let ip = req.ip ?? req.headers.get("x-real-ip");
   const forwardedFor = req.headers.get("x-forwarded-for");
@@ -29,18 +38,15 @@ async function fetchDB(
   body: any,
 ): Promise<{ [key: string]: any }> {
   try {
-    const response = await fetch(
-      "https://native-chow-30493.kv.vercel-storage.com/",
-      {
-        method: method,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization:
-            "Bearer AXcdASQgN2NkNGQyMzYtYjE5Mi00NGZmLWIxODItNmMyNzg3MjgxOWQwNzE5Zjk3ZjMyOWNhNDkyMmE0MWUzYTY1MTUxNjI5MjY=",
-        },
-        body: JSON.stringify(body),
+    const response = await fetch(DB_URL, {
+      // 【修改】
+      method: method,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${DB_TOKEN}`, // 【修改】
       },
-    );
+      body: JSON.stringify(body),
+    });
 
     return await response.json();
   } catch (error) {
@@ -51,21 +57,18 @@ async function fetchDB(
 // 新增的登录函数
 export async function performLogin(username: string, password: string) {
   try {
-    const response = await fetch(
-      "https://native-chow-30493.kv.vercel-storage.com/",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization:
-            "Bearer AXcdASQgN2NkNGQyMzYtYjE5Mi00NGZmLWIxODItNmMyNzg3MjgxOWQwNzE5Zjk3ZjMyOWNhNDkyMmE0MWUzYTY1MTUxNjI5MjY=",
-        },
-        body: JSON.stringify({
-          username: username,
-          password: password,
-        }),
+    const response = await fetch(DB_URL, {
+      // 【修改】使用 dbUrl
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${DB_TOKEN}`, // 【修改】使用 dbToken
       },
-    );
+      body: JSON.stringify({
+        username: username,
+        password: password,
+      }),
+    });
 
     return await response.json();
   } catch (error) {
@@ -74,9 +77,7 @@ export async function performLogin(username: string, password: string) {
 }
 
 export async function login(req: NextRequest) {
-  const requestBody = await req.json();
-  const username = requestBody.username;
-  const password = requestBody.password;
+  const { username, password } = await req.json();
 
   // Check username and password in the database
   const user = await fetchDB("GET", { username: username });
@@ -109,14 +110,17 @@ export async function auth(req: NextRequest) {
 
   const hashedCode = md5.hash(accessCode ?? "").trim();
 
-  const serverConfig = getServerSideConfig();
-  console.log("[Auth] allowed hashed codes: ", [...serverConfig.codes]);
+  console.log("[Auth] allowed hashed codes: ", [...SERVER_CONFIG.codes]);
   console.log("[Auth] got access code:", accessCode);
   console.log("[Auth] hashed access code:", hashedCode);
   console.log("[User IP] ", getIP(req));
   console.log("[Time] ", new Date().toLocaleString());
 
-  if (serverConfig.needCode && !serverConfig.codes.has(hashedCode) && !token) {
+  if (
+    SERVER_CONFIG.needCode &&
+    !SERVER_CONFIG.codes.has(hashedCode) &&
+    !token
+  ) {
     return {
       error: true,
       msg: !accessCode ? "empty access code" : "wrong access code",
@@ -133,7 +137,7 @@ export async function auth(req: NextRequest) {
     }
   } else {
     // if user does not provide an api key, inject system api key
-    const apiKey = serverConfig.apiKey;
+    const apiKey = SERVER_CONFIG.apiKey;
     if (apiKey) {
       console.log("[Auth] use system api key");
       req.headers.set("Authorization", `Bearer ${apiKey}`);

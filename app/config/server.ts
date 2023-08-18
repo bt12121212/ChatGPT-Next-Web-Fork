@@ -13,6 +13,8 @@ declare global {
       BUILD_MODE?: "standalone" | "export";
       BUILD_APP?: string; // is building desktop app
       HIDE_BALANCE_QUERY?: string; // allow user to query balance or not
+      USER_DB_URL?: string; //用户数据库url
+      USER_DB_TOKEN?: string; //用户数据库token
     }
   }
 }
@@ -48,5 +50,7 @@ export const getServerSideConfig = () => {
     hideUserApiKey: !!process.env.HIDE_USER_API_KEY,
     disableGPT4: !!process.env.DISABLE_GPT4,
     hideBalanceQuery: !!process.env.HIDE_BALANCE_QUERY,
+    dbToken: process.env.USER_DB_TOKEN,
+    dbUrl: process.env.USER_DB_URL,
   };
 };
