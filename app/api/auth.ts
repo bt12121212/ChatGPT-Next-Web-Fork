@@ -38,6 +38,14 @@ async function fetchDB(
   body: any,
 ): Promise<{ [key: string]: any }> {
   try {
+    let formattedBody;
+    // 如果是"PUT"方法，将对象转换为字符串
+    if (method === "PUT") {
+      formattedBody = JSON.stringify(body);
+    } else {
+      formattedBody = body;
+    }
+
     const response = await fetch(DB_URL, {
       // 【修改】
       method: method,
@@ -45,10 +53,15 @@ async function fetchDB(
         "Content-Type": "application/json",
         Authorization: `Bearer ${DB_TOKEN}`, // 【修改】
       },
-      body: JSON.stringify(body),
+      body: formattedBody,
     });
 
-    return await response.json();
+    if (method === "GET") {
+      const data = await response.text();
+      return JSON.parse(data);
+    } else {
+      return await response.json();
+    }
   } catch (error) {
     return { error: true, msg: (error as Error).message };
   }
@@ -58,11 +71,10 @@ async function fetchDB(
 export async function performLogin(username: string, password: string) {
   try {
     const response = await fetch(DB_URL, {
-      // 【修改】使用 dbUrl
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${DB_TOKEN}`, // 【修改】使用 dbToken
+        Authorization: `Bearer ${DB_TOKEN}`,
       },
       body: JSON.stringify({
         username: username,
@@ -70,19 +82,25 @@ export async function performLogin(username: string, password: string) {
       }),
     });
 
-    return await response.json();
+    const responseData = await response.json();
+
+    if (responseData && responseData.valid) {
+      return { valid: true };
+    } else {
+      return { valid: false, error: "Invalid username or password" };
+    }
   } catch (error) {
     return { error: true, msg: (error as Error).message };
   }
 }
 
-export async function login(req: NextRequest) {
+export async function setToken(req: NextRequest) {
   const { username, password } = await req.json();
 
   // Check username and password in the database
   const user = await fetchDB("GET", { username: username });
 
-  if (!user || md5.hash(password) !== user.passwordHash) {
+  if (!user || md5.hash(password) !== user.password) {
     return { valid: false, error: "Invalid username or password" };
   }
 
@@ -90,12 +108,17 @@ export async function login(req: NextRequest) {
   const token = md5.hash(new Date().toISOString() + username);
 
   // Update tokens for the user
-  if (user.tokens.length >= 10) {
+  if (user.tokens && user.tokens.length >= 10) {
     user.tokens.shift();
+  } else if (!user.tokens) {
+    user.tokens = []; // Ensure tokens property exists
   }
   user.tokens.push(token);
 
   const IP = getIP(req);
+  if (!user.loginHistory) {
+    user.loginHistory = []; // Ensure loginHistory property exists
+  }
   user.loginHistory.push({ time: new Date().toLocaleString(), IP: IP });
 
   // Update the user in the database

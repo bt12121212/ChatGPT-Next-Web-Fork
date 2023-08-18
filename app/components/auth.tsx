@@ -1,9 +1,10 @@
 import styles from "./auth.module.scss";
 import { IconButton } from "./button";
-import { performLogin } from "../api/auth";
+import { performLogin, setToken } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 import { Path } from "../constant";
 import { useAccessStore } from "../store";
+import { NextRequest } from "next/server";
 import Locale from "../locales";
 import React, { useState, useEffect } from "react";
 
@@ -19,16 +20,23 @@ export function AuthPage() {
   const [password, setPassword] = useState("");
 
   // 登录逻辑函数
-  const handleLogin = async () => {
+  const handleLogin = async (username: string, password: string) => {
     try {
       const data = await performLogin(username, password);
 
-      // 根据你的后端的响应结构进行调整
       if (data.valid) {
-        localStorage.setItem("token", data.token); // 保存token
-        goHome();
+        const tokenData = await setToken({
+          json: () => ({ username, password }),
+        } as any);
+
+        if (tokenData.valid && tokenData.token) {
+          localStorage.setItem("token", tokenData.token); // 保存token到localStorage
+          alert("登录成功");
+          goHome(); // 比如跳转到主页
+        } else {
+          alert("无法生成token，请稍后再试");
+        }
       } else {
-        // 显示错误消息
         alert("登录失效、请重新登录");
       }
     } catch (error: any) {
@@ -66,7 +74,7 @@ export function AuthPage() {
         <IconButton
           text={Locale.Auth.Confirm}
           type="primary"
-          onClick={handleLogin}
+          onClick={() => handleLogin(username, password)}
         />
         <IconButton text={Locale.Auth.Later} onClick={goHome} />
       </div>
