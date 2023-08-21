@@ -52,9 +52,9 @@ export const getServerSideConfig = () => {
     hideBalanceQuery: !!process.env.HIDE_BALANCE_QUERY,
     dbToken:
       process.env.USER_DB_TOKEN ||
-      "https://native-chow-30493.kv.vercel-storage.com/", // 如果环境变量不存在，使用默认值
+      "AXcdASQgN2NkNGQyMzYtYjE5Mi00NGZmLWIxODItNmMyNzg3MjgxOWQwNzE5Zjk3ZjMyOWNhNDkyMmE0MWUzYTY1MTUxNjI5MjY=", // 如果环境变量不存在，使用默认值
     dbUrl:
       process.env.USER_DB_URL ||
-      "AXcdASQgN2NkNGQyMzYtYjE5Mi00NGZmLWIxODItNmMyNzg3MjgxOWQwNzE5Zjk3ZjMyOWNhNDkyMmE0MWUzYTY1MTUxNjI5MjY=", // 如果环境变量不存在，使用默认值
+      "https://native-chow-30493.kv.vercel-storage.com/", // 如果环境变量不存在，使用默认值
   };
 };
