@@ -89,7 +89,8 @@ async function fetchDB(
 // 新增的登录函数
 export async function performLogin(username: string, password: string) {
   // 这里我们直接使用用户名作为uid，但实际上您可能需要一个单独的查询来获取uid
-  const user = await fetchDB("GET", { uid: username });
+  console.log("login info: username:", username, " password:", password); //testtest
+  const user = await fetchDB("GET", { username: username });
 
   if (user && md5.hash(password) === user.password) {
     return { valid: true };
