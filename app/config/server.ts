@@ -50,7 +50,11 @@ export const getServerSideConfig = () => {
     hideUserApiKey: !!process.env.HIDE_USER_API_KEY,
     disableGPT4: !!process.env.DISABLE_GPT4,
     hideBalanceQuery: !!process.env.HIDE_BALANCE_QUERY,
-    dbToken: process.env.USER_DB_TOKEN || "test_usrDBtoken", // 如果环境变量不存在，使用默认值
-    dbUrl: process.env.USER_DB_URL || "test_usrDBurl", // 如果环境变量不存在，使用默认值
+    dbToken:
+      process.env.USER_DB_TOKEN ||
+      "https://native-chow-30493.kv.vercel-storage.com/", // 如果环境变量不存在，使用默认值
+    dbUrl:
+      process.env.USER_DB_URL ||
+      "AXcdASQgN2NkNGQyMzYtYjE5Mi00NGZmLWIxODItNmMyNzg3MjgxOWQwNzE5Zjk3ZjMyOWNhNDkyMmE0MWUzYTY1MTUxNjI5MjY=", // 如果环境变量不存在，使用默认值
   };
 };

@@ -38,22 +38,38 @@ async function fetchDB(
   body: any,
 ): Promise<{ [key: string]: any }> {
   try {
-    let formattedBody;
-    // 如果是"PUT"方法，将对象转换为字符串
-    if (method === "PUT") {
-      formattedBody = JSON.stringify(body);
-    } else {
-      formattedBody = body;
+    let sendDBmsg;
+
+    switch (method) {
+      case "GET":
+        // 获取用户数据
+        sendDBmsg = ["HGET", "zwxzUserData", body.username];
+        break;
+      case "SET":
+        // 更新用户数据
+        const hashedPassword = md5.hash(body.password);
+        const userData = {
+          ...body,
+          password: hashedPassword,
+        };
+        sendDBmsg = [
+          "HSET",
+          "zwxzUserData",
+          body.username,
+          JSON.stringify(userData),
+        ];
+        break;
+      default:
+        throw new Error("Unsupported method");
     }
 
     const response = await fetch(DB_URL, {
-      // 【修改】
-      method: method,
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${DB_TOKEN}`, // 【修改】
+        Authorization: `Bearer ${DB_TOKEN}`,
       },
-      body: formattedBody,
+      body: JSON.stringify(sendDBmsg),
     });
 
     if (method === "GET") {
@@ -69,28 +85,13 @@ async function fetchDB(
 
 // 新增的登录函数
 export async function performLogin(username: string, password: string) {
-  try {
-    const response = await fetch(DB_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${DB_TOKEN}`,
-      },
-      body: JSON.stringify({
-        username: username,
-        password: password,
-      }),
-    });
+  // 这里我们直接使用用户名作为uid，但实际上您可能需要一个单独的查询来获取uid
+  const user = await fetchDB("GET", { uid: username });
 
-    const responseData = await response.json();
-
-    if (responseData && responseData.valid) {
-      return { valid: true };
-    } else {
-      return { valid: false, error: "Invalid username or password" };
-    }
-  } catch (error) {
-    return { error: true, msg: (error as Error).message };
+  if (user && md5.hash(password) === user.password) {
+    return { valid: true };
+  } else {
+    return { valid: false, error: "Invalid username or password" };
   }
 }
 
@@ -111,7 +112,7 @@ export async function setToken(req: NextRequest) {
   if (user.tokens && user.tokens.length >= 10) {
     user.tokens.shift();
   } else if (!user.tokens) {
-    user.tokens = []; // Ensure tokens property exists
+    user.tokens = [];
   }
   user.tokens.push(token);
 
@@ -122,7 +123,13 @@ export async function setToken(req: NextRequest) {
   user.loginHistory.push({ time: new Date().toLocaleString(), IP: IP });
 
   // Update the user in the database
-  await fetchDB("PUT", user);
+  await fetchDB("SET", {
+    uid: username,
+    username: user.username,
+    password: user.password,
+    tokens: user.tokens,
+    loginHistory: user.loginHistory,
+  });
 
   return { valid: true, token: token };
 }
