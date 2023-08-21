@@ -59,6 +59,7 @@ async function fetchDB(
           userInfo.username,
           JSON.stringify(userData),
         ];
+        console.log("start to get user data1.5:", sendDBmsg); //testtest
         break;
       default:
         throw new Error("Unsupported method");
@@ -72,8 +73,15 @@ async function fetchDB(
       },
       body: JSON.stringify(sendDBmsg),
     });
-    console.log("start to get user data2:", JSON.stringify(sendDBmsg)); //testtest
-
+    console.log(
+      "start to get user data2:",
+      JSON.stringify(sendDBmsg),
+      " from:url:",
+      DB_URL,
+      " key:",
+      DB_TOKEN,
+    ); //testtest
+    console.log(response);
     if (method === "GET") {
       const data = await response.text();
       console.log("start to get user data3:", data); //testtest
