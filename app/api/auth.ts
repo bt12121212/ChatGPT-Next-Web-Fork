@@ -44,6 +44,7 @@ async function fetchDB(
       case "GET":
         // 获取用户数据
         sendDBmsg = ["HGET", "zwxzUserData", body.username];
+        console.log("start to get user data1:", sendDBmsg); //testtest
         break;
       case "SET":
         // 更新用户数据
@@ -71,9 +72,11 @@ async function fetchDB(
       },
       body: JSON.stringify(sendDBmsg),
     });
+    console.log("start to get user data2:", body); //testtest
 
     if (method === "GET") {
       const data = await response.text();
+      console.log("start to get user data3:", data); //testtest
       return JSON.parse(data);
     } else {
       return await response.json();
