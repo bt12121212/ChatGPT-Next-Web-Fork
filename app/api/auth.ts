@@ -84,8 +84,13 @@ async function fetchDB(
     console.log(response);
     if (method === "GET") {
       const data = await response.text();
+      const parsedData = JSON.parse(data);
       console.log("start to get user data3:", data); //testtest
-      return JSON.parse(data);
+      if (parsedData.result) {
+        return JSON.parse(parsedData.result);
+      } else {
+        return JSON.parse(data);
+      }
     } else {
       return await response.json();
     }
