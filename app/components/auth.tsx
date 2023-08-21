@@ -23,12 +23,12 @@ export function AuthPage() {
   const handleLogin = async (username: string, password: string) => {
     try {
       const data = await performLogin(username, password);
-
+      console.log("data: ", data); //********test
       if (data.valid) {
         const tokenData = await setToken({
           json: () => ({ username, password }),
         } as any);
-
+        console.log("tokendata: ", tokenData); //********test
         if (tokenData.valid && tokenData.token) {
           localStorage.setItem("token", tokenData.token); // 保存token到localStorage
           alert("登录成功");

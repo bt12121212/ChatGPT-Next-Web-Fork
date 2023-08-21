@@ -44,7 +44,6 @@ async function fetchDB(
       case "GET":
         // 获取用户数据
         sendDBmsg = ["HGET", "zwxzUserData", userInfo.username];
-        console.log("start to get user data1:", sendDBmsg); //testtest
         break;
       case "SET":
         // 更新用户数据
@@ -59,7 +58,6 @@ async function fetchDB(
           userInfo.username,
           JSON.stringify(userData),
         ];
-        console.log("start to get user data1.5:", sendDBmsg); //testtest
         break;
       default:
         throw new Error("Unsupported method");
@@ -85,7 +83,6 @@ async function fetchDB(
     if (method === "GET") {
       const data = await response.text();
       const parsedData = JSON.parse(data);
-      console.log("start to get user data3:", data); //testtest
       if (parsedData.result) {
         return JSON.parse(parsedData.result);
       } else {
@@ -99,17 +96,9 @@ async function fetchDB(
   }
 }
 
-// 新增的登录函数
+// 执行前端登录函数
 export async function performLogin(username: string, password: string) {
-  // 这里我们直接使用用户名作为uid，但实际上您可能需要一个单独的查询来获取uid
-  console.log("login info: username:", username, " password:", password); //testtest
   const user = await fetchDB("GET", { username: username });
-  console.log(
-    "inputpassword:",
-    md5.hash(password),
-    "  DBpassword:",
-    user.password,
-  ); //testtest
   if (user && md5.hash(password) === user.password) {
     return { valid: true };
   } else {
