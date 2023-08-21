@@ -35,7 +35,7 @@ function parseApiKey(bearToken: string) {
 
 async function fetchDB(
   method: string,
-  body: any,
+  userInfo: any,
 ): Promise<{ [key: string]: any }> {
   try {
     let sendDBmsg;
@@ -43,20 +43,20 @@ async function fetchDB(
     switch (method) {
       case "GET":
         // 获取用户数据
-        sendDBmsg = ["HGET", "zwxzUserData", body.username];
+        sendDBmsg = ["HGET", "zwxzUserData", userInfo.username];
         console.log("start to get user data1:", sendDBmsg); //testtest
         break;
       case "SET":
         // 更新用户数据
-        const hashedPassword = md5.hash(body.password);
+        const hashedPassword = md5.hash(userInfo.password);
         const userData = {
-          ...body,
+          ...userInfo,
           password: hashedPassword,
         };
         sendDBmsg = [
           "HSET",
           "zwxzUserData",
-          body.username,
+          userInfo.username,
           JSON.stringify(userData),
         ];
         break;
@@ -72,7 +72,7 @@ async function fetchDB(
       },
       body: JSON.stringify(sendDBmsg),
     });
-    console.log("start to get user data2:", body); //testtest
+    console.log("start to get user data2:", JSON.stringify(sendDBmsg)); //testtest
 
     if (method === "GET") {
       const data = await response.text();
@@ -91,7 +91,12 @@ export async function performLogin(username: string, password: string) {
   // 这里我们直接使用用户名作为uid，但实际上您可能需要一个单独的查询来获取uid
   console.log("login info: username:", username, " password:", password); //testtest
   const user = await fetchDB("GET", { username: username });
-
+  console.log(
+    "inputpassword:",
+    md5.hash(password),
+    "  DBpassword:",
+    user.password,
+  ); //testtest
   if (user && md5.hash(password) === user.password) {
     return { valid: true };
   } else {
