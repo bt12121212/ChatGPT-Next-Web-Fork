@@ -71,15 +71,6 @@ async function fetchDB(
       },
       body: JSON.stringify(sendDBmsg),
     });
-    console.log(
-      "start to get user data2:",
-      JSON.stringify(sendDBmsg),
-      " from:url:",
-      DB_URL,
-      " key:",
-      DB_TOKEN,
-    ); //testtest
-    console.log(response);
     if (method === "GET") {
       const data = await response.text();
       const parsedData = JSON.parse(data);
@@ -114,6 +105,7 @@ export async function setToken(req: NextRequest) {
   const user = await fetchDB("GET", { username: username });
 
   if (!user || md5.hash(password) !== user.password) {
+    console.error("Token Error: Invalid username or password");
     return { valid: false, error: "Invalid username or password" };
   }
 
@@ -142,7 +134,8 @@ export async function setToken(req: NextRequest) {
     tokens: user.tokens,
     loginHistory: user.loginHistory,
   });
-
+  console.log("[setToken] user:", user);
+  console.log("[setToken] Generated token:", token);
   return { valid: true, token: token };
 }
 
