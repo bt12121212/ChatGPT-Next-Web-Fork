@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { Path } from "../constant";
 import { useAccessStore } from "../store";
 import Locale from "../locales";
-import React, { useState, useEffect } from "react";
 
 import BotIcon from "../icons/bot.svg";
 
@@ -15,9 +14,9 @@ export function AuthPage() {
   const goHome = () => navigate(Path.Home);
 
   // 分别保存用户名和密码
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
 
+  const username = "";
+  const password = "";
   // 登录逻辑函数
   const handleLogin = async (username: string, password: string) => {
     try {
@@ -49,7 +48,6 @@ export function AuthPage() {
         type="username"
         placeholder={Locale.Auth.Inputusername}
         value={username}
-        onChange={(e) => setUsername(e.currentTarget.value)}
       />
 
       <input
@@ -57,7 +55,6 @@ export function AuthPage() {
         type="password"
         placeholder={Locale.Auth.InputPassword}
         value={password}
-        onChange={(e) => setPassword(e.currentTarget.value)}
       />
 
       <div className={styles["auth-actions"]}>
