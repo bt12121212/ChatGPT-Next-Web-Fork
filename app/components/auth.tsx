@@ -68,9 +68,8 @@ export function AuthPage() {
       const userData = await performLogin(username, password);
       if (userData.valid) {
         access.updateUser(JSON.stringify(userData.user));
-        const newuser = JSON.parse(access.accuserinfo);
         alert("欢迎登录尊闻行知");
-        goHome;
+        goHome();
       } else {
         alert("用户名或密码错误");
       }
