@@ -6,7 +6,7 @@ import { Path } from "../constant";
 import { useAccessStore } from "../store";
 import Locale from "../locales";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import BotIcon from "../icons/bot.svg";
 
@@ -18,6 +18,35 @@ export function AuthPage() {
   // 分别保存用户名和密码
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    if (access.accuserinfo) {
+      const newuser = JSON.parse(access.accuserinfo);
+
+      const token = setToken(username);
+      if (newuser.tokens && newuser.tokens.length >= 10) {
+        newuser.tokens.shift();
+      } else if (!newuser.tokens) {
+        newuser.tokens = [];
+      }
+      newuser.tokens.push(token);
+
+      const IP = getClientIP();
+      if (!newuser.loginHistory) {
+        newuser.loginHistory = []; // Ensure loginHistory property exists
+      }
+      newuser.loginHistory.push({
+        time: new Date().toLocaleString(),
+        IP: IP,
+      });
+      console.log("user2", newuser);
+      try {
+        fetchDB("SET", JSON.stringify(newuser));
+      } catch (error: any) {
+        console.error("token上传失败");
+      }
+    }
+  }, [access.accuserinfo]); // 依赖数组，仅当 access.accuserinfo 发生变化时，执行 useEffect 中的代码
 
   //获取IP
   async function getClientIP(): Promise<string> {
@@ -34,40 +63,9 @@ export function AuthPage() {
   const handleLogin = async (username: string, password: string) => {
     try {
       const userData = await performLogin(username, password);
-
-      console.log("data: ", userData); //********test
       if (userData.valid) {
-        console.log("新用户登录: ", userData.user); //********test
         access.updateUser(JSON.stringify(userData.user));
-        console.log("access: ", access); //********test
         const newuser = JSON.parse(access.accuserinfo);
-        console.log("newuser: ", newuser);
-        const token = setToken(username);
-        console.log("token: ", token);
-
-        if (newuser.tokens && newuser.tokens.length >= 10) {
-          newuser.tokens.shift();
-        } else if (!newuser.tokens) {
-          newuser.tokens = [];
-        }
-
-        newuser.tokens.push(token);
-        const IP = await getClientIP(); //**我想要在这里获取IP**;
-
-        if (!newuser.loginHistory) {
-          newuser.loginHistory = []; // Ensure loginHistory property exists
-        }
-        newuser.loginHistory.push({
-          time: new Date().toLocaleString(),
-          IP: IP,
-        });
-        console.log("user2", newuser);
-
-        try {
-          await fetchDB("SET", JSON.stringify(newuser));
-        } catch (error: any) {
-          console.error("token上传失败");
-        }
       } else {
         alert("用户名或密码错误");
       }
