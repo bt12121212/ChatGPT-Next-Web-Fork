@@ -12,7 +12,8 @@ import {
   showToast,
 } from "./ui-lib";
 import { IconButton } from "./button";
-import { copyToClipboard, downloadAs, useMobileScreen } from "../utils";
+import { copyToClipboard, downloadAs } from "../utils";
+import { useMobileScreen } from "../windowHooks";
 
 import CopyIcon from "../icons/copy.svg";
 import LoadingIcon from "../icons/three-dots.svg";

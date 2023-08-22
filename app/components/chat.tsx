@@ -48,12 +48,8 @@ import {
   ModelType,
 } from "../store";
 
-import {
-  copyToClipboard,
-  selectOrCopy,
-  autoGrowTextArea,
-  useMobileScreen,
-} from "../utils";
+import { copyToClipboard, selectOrCopy, autoGrowTextArea } from "../utils";
+import { useMobileScreen } from "../windowHooks";
 
 import dynamic from "next/dynamic";
 
