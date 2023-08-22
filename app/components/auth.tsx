@@ -42,6 +42,8 @@ export function AuthPage() {
         const token = setToken(username);
         const user = JSON.parse(access.accuserinfo);
 
+        console.log("user1", user);
+
         if (user.tokens && user.tokens.length >= 10) {
           user.tokens.shift();
         } else if (!user.tokens) {
@@ -54,8 +56,8 @@ export function AuthPage() {
         if (!user.loginHistory) {
           user.loginHistory = []; // Ensure loginHistory property exists
         }
-
         user.loginHistory.push({ time: new Date().toLocaleString(), IP: IP });
+        console.log("user2", user);
 
         await fetchDB("SET", JSON.stringify(user));
       } else {
