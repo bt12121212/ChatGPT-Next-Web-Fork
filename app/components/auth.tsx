@@ -25,7 +25,7 @@ export function AuthPage() {
       if (access.accuserinfo) {
         const newuser = JSON.parse(access.accuserinfo);
 
-        const token = setToken(username);
+        const token = await setToken(username);
         if (newuser.tokens && newuser.tokens.length >= 10) {
           newuser.tokens.shift();
         } else if (!newuser.tokens) {
@@ -69,6 +69,8 @@ export function AuthPage() {
       if (userData.valid) {
         access.updateUser(JSON.stringify(userData.user));
         const newuser = JSON.parse(access.accuserinfo);
+        alert("欢迎登录尊闻行知");
+        goHome;
       } else {
         alert("用户名或密码错误");
       }
