@@ -41,25 +41,23 @@ export function AuthPage() {
 
         const token = setToken(username);
         const user = JSON.parse(access.accuserinfo);
+
         if (user.tokens && user.tokens.length >= 10) {
           user.tokens.shift();
         } else if (!user.tokens) {
           user.tokens = [];
         }
+
         user.tokens.push(token);
         const IP = await getClientIP(); //**我想要在这里获取IP**;
+
         if (!user.loginHistory) {
           user.loginHistory = []; // Ensure loginHistory property exists
         }
+
         user.loginHistory.push({ time: new Date().toLocaleString(), IP: IP });
 
-        await fetchDB("SET", {
-          uid: user.uid,
-          username: user.username,
-          password: user.password,
-          tokens: user.tokens,
-          loginHistory: user.loginHistory,
-        });
+        await fetchDB("SET", JSON.stringify(user));
       } else {
         alert("用户名或密码错误");
       }
