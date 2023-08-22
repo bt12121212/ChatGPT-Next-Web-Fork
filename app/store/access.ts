@@ -56,7 +56,9 @@ export const useAccessStore = create<AccessControlStore>()(
 
       updateUser(user: string) {
         //新增用户登录
+        console.log("Before updateUser:", get().accuserinfo);
         set(() => ({ accuserinfo: user?.trim() }));
+        console.log("After updateUser:", get().accuserinfo);
       },
 
       updateToken(token: string) {
