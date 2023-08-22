@@ -20,33 +20,36 @@ export function AuthPage() {
   const [password, setPassword] = useState("");
 
   useEffect(() => {
-    if (access.accuserinfo) {
-      const newuser = JSON.parse(access.accuserinfo);
+    (async () => {
+      // 定义并立即执行一个异步函数
+      if (access.accuserinfo) {
+        const newuser = JSON.parse(access.accuserinfo);
 
-      const token = setToken(username);
-      if (newuser.tokens && newuser.tokens.length >= 10) {
-        newuser.tokens.shift();
-      } else if (!newuser.tokens) {
-        newuser.tokens = [];
-      }
-      newuser.tokens.push(token);
+        const token = setToken(username);
+        if (newuser.tokens && newuser.tokens.length >= 10) {
+          newuser.tokens.shift();
+        } else if (!newuser.tokens) {
+          newuser.tokens = [];
+        }
+        newuser.tokens.push(token);
 
-      const IP = getClientIP();
-      if (!newuser.loginHistory) {
-        newuser.loginHistory = []; // Ensure loginHistory property exists
+        const IP = await getClientIP(); // 这里使用await
+        if (!newuser.loginHistory) {
+          newuser.loginHistory = []; // Ensure loginHistory property exists
+        }
+        newuser.loginHistory.push({
+          time: new Date().toLocaleString(),
+          IP: IP,
+        });
+        console.log("user2", newuser);
+        try {
+          await fetchDB("SET", JSON.stringify(newuser));
+        } catch (error: any) {
+          console.error("token上传失败");
+        }
       }
-      newuser.loginHistory.push({
-        time: new Date().toLocaleString(),
-        IP: IP,
-      });
-      console.log("user2", newuser);
-      try {
-        fetchDB("SET", JSON.stringify(newuser));
-      } catch (error: any) {
-        console.error("token上传失败");
-      }
-    }
-  }, [access.accuserinfo]); // 依赖数组，仅当 access.accuserinfo 发生变化时，执行 useEffect 中的代码
+    })(); // 立即执行这个异步函数
+  }, [access.accuserinfo]);
 
   //获取IP
   async function getClientIP(): Promise<string> {
