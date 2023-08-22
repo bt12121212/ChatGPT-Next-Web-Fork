@@ -4,7 +4,6 @@ import { performLogin, setToken } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 import { Path } from "../constant";
 import { useAccessStore } from "../store";
-import { NextRequest } from "next/server";
 import Locale from "../locales";
 import React, { useState, useEffect } from "react";
 
@@ -22,22 +21,13 @@ export function AuthPage() {
   // 登录逻辑函数
   const handleLogin = async (username: string, password: string) => {
     try {
-      const data = await performLogin(username, password);
-      console.log("data: ", data); //********test
-      if (data.valid) {
-        const tokenData = await setToken({
-          json: () => ({ username, password }),
-        } as any);
-        console.log("tokendata: ", tokenData); //********test
-        if (tokenData.valid && tokenData.token) {
-          localStorage.setItem("token", tokenData.token); // 保存token到localStorage
-          alert("登录成功");
-          goHome(); // 比如跳转到主页
-        } else {
-          alert("无法生成token，请稍后再试");
-        }
+      const userData = await performLogin(username, password);
+      console.log("data: ", userData); //********test
+      if (userData.valid) {
+        console.log("新用户登录: ", userData.user); //********test
+        access.updateUser(JSON.stringify(userData.user));
       } else {
-        alert("登录失效、请重新登录");
+        alert("用户名或密码错误");
       }
     } catch (error: any) {
       console.error("登录失败:", error.msg || error);

@@ -7,7 +7,7 @@ import { getClientConfig } from "../config/client";
 
 export interface AccessControlStore {
   accessCode: string;
-  accessCode2: string;
+  accuserinfo: string;
   token: string;
 
   needCode: boolean;
@@ -19,6 +19,7 @@ export interface AccessControlStore {
 
   updateToken: (_: string) => void;
   updateCode: (_: string) => void;
+  updateUser: (_: string) => void;
   updateOpenAiUrl: (_: string) => void;
   enabledAccessControl: () => boolean;
   isAuthorized: () => boolean;
@@ -34,9 +35,9 @@ console.log("[API] default openai url", DEFAULT_OPENAI_URL);
 export const useAccessStore = create<AccessControlStore>()(
   persist(
     (set, get) => ({
-      token: "",
+      token: "", //openai api key
       accessCode: "",
-      accessCode2: "",
+      accuserinfo: "", //用户登录JSON.stringify(user)
       needCode: true,
       hideUserApiKey: false,
       hideBalanceQuery: false,
@@ -52,6 +53,12 @@ export const useAccessStore = create<AccessControlStore>()(
       updateCode(code: string) {
         set(() => ({ accessCode: code?.trim() }));
       },
+
+      updateUser(user: string) {
+        //新增用户登录
+        set(() => ({ accuserinfo: user?.trim() }));
+      },
+
       updateToken(token: string) {
         set(() => ({ token: token?.trim() }));
       },
@@ -63,7 +70,10 @@ export const useAccessStore = create<AccessControlStore>()(
 
         // has token or has code or disabled access control
         return (
-          !!get().token || !!get().accessCode || !get().enabledAccessControl()
+          !!get().token ||
+          !!get().accessCode ||
+          !!get().accuserinfo ||
+          !get().enabledAccessControl() //新增用户登录
         );
       },
       fetch() {

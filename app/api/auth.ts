@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { getServerSideConfig } from "../config/server";
 import md5 from "spark-md5";
 import { ACCESS_CODE_PREFIX } from "../constant";
+import { useAccessStore } from "../store";
 
 const SERVER_CONFIG = getServerSideConfig();
 if (!SERVER_CONFIG.dbUrl || !SERVER_CONFIG.dbToken) {
@@ -90,52 +91,18 @@ async function fetchDB(
 // 执行前端登录函数
 export async function performLogin(username: string, password: string) {
   const user = await fetchDB("GET", { username: username });
+
+  // 判断user是否存在，并且传入的密码是否与存储在数据库中的密码匹配
   if (user && md5.hash(password) === user.password) {
-    return { valid: true };
+    return { valid: true, user: user }; // 在这里，我们返回了user对象
   } else {
     alert(JSON.stringify(user));
     return { valid: false, error: "Invalid username or password" };
   }
 }
 
-export async function setToken(req: NextRequest) {
-  const { username, password } = await req.json();
-
-  // Check username and password in the database
-  const user = await fetchDB("GET", { username: username });
-
-  if (!user || md5.hash(password) !== user.password) {
-    console.error("Token Error: Invalid username or password");
-    return { valid: false, error: "Invalid username or password" };
-  }
-
-  // Generate a new token
+export async function setToken(username: string) {
   const token = md5.hash(new Date().toISOString() + username);
-
-  // Update tokens for the user
-  if (user.tokens && user.tokens.length >= 10) {
-    user.tokens.shift();
-  } else if (!user.tokens) {
-    user.tokens = [];
-  }
-  user.tokens.push(token);
-
-  const IP = getIP(req);
-  if (!user.loginHistory) {
-    user.loginHistory = []; // Ensure loginHistory property exists
-  }
-  user.loginHistory.push({ time: new Date().toLocaleString(), IP: IP });
-
-  // Update the user in the database
-  await fetchDB("SET", {
-    uid: username,
-    username: user.username,
-    password: user.password,
-    tokens: user.tokens,
-    loginHistory: user.loginHistory,
-  });
-  console.log("[setToken] user:", user);
-  console.log("[setToken] Generated token:", token);
   return { valid: true, token: token };
 }
 
@@ -144,6 +111,7 @@ export async function auth(req: NextRequest) {
   const { accessCode, apiKey: token } = parseApiKey(authToken);
 
   const hashedCode = md5.hash(accessCode ?? "").trim();
+  const serverConfig = getServerSideConfig();
 
   console.log("[Auth] allowed hashed codes: ", [...SERVER_CONFIG.codes]);
   console.log("[Auth] got access code:", accessCode);
@@ -151,34 +119,51 @@ export async function auth(req: NextRequest) {
   console.log("[User IP] ", getIP(req));
   console.log("[Time] ", new Date().toLocaleString());
 
-  if (
-    SERVER_CONFIG.needCode &&
-    !SERVER_CONFIG.codes.has(hashedCode) &&
-    !token
-  ) {
+  const access = useAccessStore.getState(); //new user
+  if (access.accuserinfo) {
+    console.log("[Userinfo] ", access.accuserinfo);
+    const user = JSON.parse(access.accuserinfo);
+
+    if (user.tokens && user.tokens.length >= 10) {
+      user.tokens.shift();
+    } else if (!user.tokens) {
+      user.tokens = [];
+    }
+    user.tokens.push(token);
+    const IP = getIP(req);
+    if (!user.loginHistory) {
+      user.loginHistory = []; // Ensure loginHistory property exists
+    }
+    user.loginHistory.push({ time: new Date().toLocaleString(), IP: IP });
+
+    await fetchDB("SET", {
+      uid: user.uid,
+      username: user.username,
+      password: user.password,
+      tokens: user.tokens,
+      loginHistory: user.loginHistory,
+    });
+  }
+
+  if (serverConfig.needCode && !serverConfig.codes.has(hashedCode) && !token) {
     return {
       error: true,
       msg: !accessCode ? "empty access code" : "wrong access code",
     };
   }
 
-  if (token) {
-    // Check if the token exists in the database for the given user
-    const user = await fetchDB("GET", { token: token });
-    if (user && user.tokens.includes(token)) {
-      return {
-        error: false,
-      };
-    }
-  } else {
-    // if user does not provide an api key, inject system api key
-    const apiKey = SERVER_CONFIG.apiKey;
+  if (!token) {
+    const apiKey = serverConfig.apiKey;
     if (apiKey) {
       console.log("[Auth] use system api key");
       req.headers.set("Authorization", `Bearer ${apiKey}`);
+    } else if (access) {
+      console.log("【Auth】use user/password login");
     } else {
       console.log("[Auth] admin did not provide an api key");
     }
+  } else {
+    console.log("[Auth] use user api key");
   }
 
   return {
