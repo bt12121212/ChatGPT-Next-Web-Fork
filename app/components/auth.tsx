@@ -6,6 +6,8 @@ import { Path } from "../constant";
 import { useAccessStore } from "../store";
 import Locale from "../locales";
 
+import React, { useState } from "react";
+
 import BotIcon from "../icons/bot.svg";
 
 export function AuthPage() {
@@ -14,9 +16,8 @@ export function AuthPage() {
   const goHome = () => navigate(Path.Home);
 
   // 分别保存用户名和密码
-
-  const username = "";
-  const password = "";
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   //获取IP
   async function getClientIP(): Promise<string> {
@@ -82,6 +83,7 @@ export function AuthPage() {
         type="username"
         placeholder={Locale.Auth.Inputusername}
         value={username}
+        onChange={(e) => setUsername(e.target.value)}
       />
 
       <input
@@ -89,6 +91,7 @@ export function AuthPage() {
         type="password"
         placeholder={Locale.Auth.InputPassword}
         value={password}
+        onChange={(e) => setPassword(e.target.value)}
       />
 
       <div className={styles["auth-actions"]}>
