@@ -95,7 +95,6 @@ export async function performLogin(username: string, password: string) {
   if (user && md5.hash(password) === user.password) {
     return { valid: true, user: user }; // 在这里，我们返回了user对象
   } else {
-    alert(JSON.stringify(user));
     return { valid: false, error: "Invalid username or password" };
   }
 }

@@ -34,32 +34,40 @@ export function AuthPage() {
   const handleLogin = async (username: string, password: string) => {
     try {
       const userData = await performLogin(username, password);
+
       console.log("data: ", userData); //********test
       if (userData.valid) {
         console.log("新用户登录: ", userData.user); //********test
         access.updateUser(JSON.stringify(userData.user));
-
+        console.log("access: ", access); //********test
+        const newuser = JSON.parse(access.accuserinfo);
+        console.log("newuser: ", newuser);
         const token = setToken(username);
-        const user = JSON.parse(access.accuserinfo);
+        console.log("token: ", token);
 
-        console.log("user1", user);
-
-        if (user.tokens && user.tokens.length >= 10) {
-          user.tokens.shift();
-        } else if (!user.tokens) {
-          user.tokens = [];
+        if (newuser.tokens && newuser.tokens.length >= 10) {
+          newuser.tokens.shift();
+        } else if (!newuser.tokens) {
+          newuser.tokens = [];
         }
 
-        user.tokens.push(token);
+        newuser.tokens.push(token);
         const IP = await getClientIP(); //**我想要在这里获取IP**;
 
-        if (!user.loginHistory) {
-          user.loginHistory = []; // Ensure loginHistory property exists
+        if (!newuser.loginHistory) {
+          newuser.loginHistory = []; // Ensure loginHistory property exists
         }
-        user.loginHistory.push({ time: new Date().toLocaleString(), IP: IP });
-        console.log("user2", user);
+        newuser.loginHistory.push({
+          time: new Date().toLocaleString(),
+          IP: IP,
+        });
+        console.log("user2", newuser);
 
-        await fetchDB("SET", JSON.stringify(user));
+        try {
+          await fetchDB("SET", JSON.stringify(newuser));
+        } catch (error: any) {
+          console.error("token上传失败");
+        }
       } else {
         alert("用户名或密码错误");
       }
