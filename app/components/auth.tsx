@@ -1,6 +1,6 @@
 import styles from "./auth.module.scss";
 import { IconButton } from "./button";
-import { performLogin, setToken } from "../api/auth";
+import { performLogin, setToken, fetchDB } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 import { Path } from "../constant";
 import { useAccessStore } from "../store";
@@ -17,6 +17,18 @@ export function AuthPage() {
 
   const username = "";
   const password = "";
+
+  //获取IP
+  async function getClientIP(): Promise<string> {
+    try {
+      const response = await fetch("https://api.ipify.org?format=json");
+      const data = await response.json();
+      return data.ip;
+    } catch (error) {
+      console.error("Error fetching client IP:", error);
+      return ""; // 返回空字符串或其他默认值
+    }
+  }
   // 登录逻辑函数
   const handleLogin = async (username: string, password: string) => {
     try {
@@ -25,6 +37,28 @@ export function AuthPage() {
       if (userData.valid) {
         console.log("新用户登录: ", userData.user); //********test
         access.updateUser(JSON.stringify(userData.user));
+
+        const token = setToken(username);
+        const user = JSON.parse(access.accuserinfo);
+        if (user.tokens && user.tokens.length >= 10) {
+          user.tokens.shift();
+        } else if (!user.tokens) {
+          user.tokens = [];
+        }
+        user.tokens.push(token);
+        const IP = await getClientIP(); //**我想要在这里获取IP**;
+        if (!user.loginHistory) {
+          user.loginHistory = []; // Ensure loginHistory property exists
+        }
+        user.loginHistory.push({ time: new Date().toLocaleString(), IP: IP });
+
+        await fetchDB("SET", {
+          uid: user.uid,
+          username: user.username,
+          password: user.password,
+          tokens: user.tokens,
+          loginHistory: user.loginHistory,
+        });
       } else {
         alert("用户名或密码错误");
       }
