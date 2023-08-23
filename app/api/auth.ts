@@ -56,17 +56,25 @@ export async function fetchDB(
         sendDBmsg = ["HGET", "zwxzUserData", userInfo.username];
         break;
       case "SET":
-        // 更新用户数据
-        const hashedPassword = md5.hash(userInfo.password);
-        const userData = {
-          ...userInfo,
-          password: hashedPassword,
-        };
+        /* 
+        用户数据示例：
+        {
+          uid: "1",
+          username: "1",
+          password: "c4ca4238a0b923820dcc509a6f75849b",
+          tokens: ["6512bd43d9caa6e02c990b0a82652dca"],
+          loginHistory: [
+            {
+              time: "2023-08-23T10:35:20.410Z",
+              IP: "192.168.22.62"
+            }
+          ]
+        } */
         sendDBmsg = [
           "HSET",
           "zwxzUserData",
           userInfo.username,
-          JSON.stringify(userData),
+          JSON.stringify(userInfo),
         ];
         break;
       default:
@@ -134,7 +142,7 @@ export async function auth(req: NextRequest) {
   console.log("[User IP] ", getIP(req));
   console.log("[Time] ", new Date().toLocaleString());
   console.log("[Auth] Accuserinfo:", accUserInfo);
-  /*
+  /*       8.24在增加用户名的授权
   if (accUserInfo){
  
     performLogin(username: string, password: string)
