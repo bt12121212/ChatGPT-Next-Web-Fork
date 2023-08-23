@@ -37,7 +37,7 @@ export const useAccessStore = create<AccessControlStore>()(
     (set, get) => ({
       token: "", //openai api key
       accessCode: "",
-      accuserinfo: "", //用户登录JSON.stringify(user)
+      accuserinfo: "", //JSON.stringify(user,password,token)
       needCode: true,
       hideUserApiKey: false,
       hideBalanceQuery: false,
@@ -56,9 +56,7 @@ export const useAccessStore = create<AccessControlStore>()(
 
       updateUser(user: string) {
         //新增用户登录
-        console.log("Before updateUser:", get().accuserinfo);
         set(() => ({ accuserinfo: user?.trim() }));
-        console.log("After updateUser:", get().accuserinfo);
       },
 
       updateToken(token: string) {

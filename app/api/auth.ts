@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { getServerSideConfig } from "../config/server";
 import md5 from "spark-md5";
-import { ACCESS_CODE_PREFIX } from "../constant";
+import { ACCESS_CODE_PREFIX, ACCESS_USER_PREFIX } from "../constant";
 
 const SERVER_CONFIG = getServerSideConfig();
 if (!SERVER_CONFIG.dbUrl || !SERVER_CONFIG.dbToken) {
@@ -26,10 +26,20 @@ function getIP(req: NextRequest) {
 function parseApiKey(bearToken: string) {
   const token = bearToken.trim().replaceAll("Bearer ", "").trim();
   const isOpenAiKey = !token.startsWith(ACCESS_CODE_PREFIX);
+  const isUserToken = token.startsWith(ACCESS_USER_PREFIX);
 
+  if (isUserToken) {
+    //新增是不是通过用户名登录
+    return {
+      accUserInfo: token.slice(ACCESS_USER_PREFIX.length),
+      accessCode: "",
+      apiKey: "",
+    };
+  }
   return {
     accessCode: isOpenAiKey ? "" : token.slice(ACCESS_CODE_PREFIX.length),
     apiKey: isOpenAiKey ? token : "",
+    accUserInfo: "", // 当token不是用户token时，这里返回空字符串
   };
 }
 
@@ -89,11 +99,18 @@ export async function fetchDB(
 
 // 执行前端登录函数
 export async function performLogin(username: string, password: string) {
+  //此处password为md5.hash(password)的结果
   const user = await fetchDB("GET", { username: username });
 
   // 判断user是否存在，并且传入的密码是否与存储在数据库中的密码匹配
-  if (user && md5.hash(password) === user.password) {
-    return { valid: true, user: user }; // 在这里，我们返回了user对象
+  if (user && password === user.password) {
+    const token = await setToken(username);
+    const storageUser = {
+      username: username,
+      password: password,
+      token: token,
+    };
+    return { valid: true, user: JSON.stringify(storageUser) }; // 在这里，我们返回了user 用户名和token的JSON.stringify
   } else {
     return { valid: false, error: "Invalid username or password" };
   }
@@ -106,7 +123,7 @@ export async function setToken(username: string) {
 
 export async function auth(req: NextRequest) {
   const authToken = req.headers.get("Authorization") ?? "";
-  const { accessCode, apiKey: token } = parseApiKey(authToken);
+  const { accessCode, apiKey: token, accUserInfo } = parseApiKey(authToken);
 
   const hashedCode = md5.hash(accessCode ?? "").trim();
   const serverConfig = getServerSideConfig();
@@ -116,6 +133,34 @@ export async function auth(req: NextRequest) {
   console.log("[Auth] hashed access code:", hashedCode);
   console.log("[User IP] ", getIP(req));
   console.log("[Time] ", new Date().toLocaleString());
+  console.log("[Auth] Accuserinfo:", accUserInfo);
+  /*
+  if (accUserInfo){
+ 
+    performLogin(username: string, password: string)
+    if (newuser.tokens && newuser.tokens.length >= 10) {
+      newuser.tokens.shift();
+    } else if (!newuser.tokens) {
+      newuser.tokens = [];
+    }
+    newuser.tokens.push(token);
+
+    const IP = getIP(req);
+    if (!newuser.loginHistory) {
+      newuser.loginHistory = []; // Ensure loginHistory property exists
+    }
+    newuser.loginHistory.push({
+      time: new Date().toLocaleString(),
+      IP: IP,
+    });
+
+    try {
+      await fetchDB("SET", JSON.stringify(newuser));
+    } catch (error: any) {
+      console.error("token上传失败");
+    }
+  }
+*/
 
   if (serverConfig.needCode && !serverConfig.codes.has(hashedCode) && !token) {
     return {
