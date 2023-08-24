@@ -43,7 +43,7 @@ function parseApiKey(bearToken: string) {
   };
 }
 
-export async function fetchDB(
+export async function fetchDB( //返回json
   method: string,
   userInfo: any,
 ): Promise<{ [key: string]: any }> {
@@ -57,7 +57,7 @@ export async function fetchDB(
         break;
       case "SET":
         /* 
-        用户数据示例：
+        JSON.parse(user)用户数据示例：
         {
           uid: "1",
           username: "1",
@@ -143,9 +143,9 @@ export async function auth(req: NextRequest) {
   console.log("[Time] ", new Date().toLocaleString());
   console.log("[Auth] Accuserinfo:", accUserInfo);
   /*       8.24在增加用户名的授权
-  if (accUserInfo){
- 
-    performLogin(username: string, password: string)
+   if (accUserInfo) {
+    const { username, password } = JSON.parse(accUserInfo);
+    thisuser =
     if (newuser.tokens && newuser.tokens.length >= 10) {
       newuser.tokens.shift();
     } else if (!newuser.tokens) {
@@ -170,7 +170,43 @@ export async function auth(req: NextRequest) {
   }
 */
 
-  if (serverConfig.needCode && !serverConfig.codes.has(hashedCode) && !token) {
+  if (accUserInfo) {
+    // 解析accUserInfo以获取用户名、密码和token
+    const { username, password } = JSON.parse(accUserInfo);
+
+    // 直接使用fetchDB获取用户数据
+    const user = await fetchDB("GET", { username: username });
+    const newtoken = setToken(username);
+    if (user && password === user.password) {
+      if (user.tokens && user.tokens.length >= 10) {
+        user.tokens.shift();
+      } else if (!user.tokens) {
+        user.tokens = [];
+      }
+      user.tokens.push(token);
+
+      const IP = getIP(req);
+      if (!user.loginHistory) {
+        user.loginHistory = []; // Ensure loginHistory property exists
+      }
+      user.loginHistory.push({
+        time: new Date().toLocaleString(),
+        IP: IP,
+      });
+
+      try {
+        await fetchDB("SET", user);
+      } catch (error: any) {
+        console.error("token上传失败");
+      }
+    } else {
+      return { error: true, msg: "用户数据错误" };
+    }
+  } else if (
+    serverConfig.needCode &&
+    !serverConfig.codes.has(hashedCode) &&
+    !token
+  ) {
     return {
       error: true,
       msg: !accessCode ? "empty access code" : "wrong access code",
