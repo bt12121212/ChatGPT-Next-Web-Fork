@@ -864,6 +864,9 @@ function _Chat() {
     session.messages.at(0)?.content !== BOT_HELLO.content
   ) {
     const copiedHello = Object.assign({}, BOT_HELLO);
+
+    //测试accessStore
+    alert(accessStore.isAuthorized());
     if (!accessStore.isAuthorized()) {
       copiedHello.content = Locale.Error.Unauthorized;
     }
