@@ -23,6 +23,13 @@ function getIP(req: NextRequest) {
   return ip;
 }
 
+function getBeijingTime() {
+  const now = new Date();
+  const offset = now.getTimezoneOffset() * 60 * 1000; // 获取当前时区偏移的毫秒数
+  const beijingOffset = 8 * 60 * 60 * 1000; // 北京时区偏移的毫秒数
+  return new Date(now.getTime() + offset + beijingOffset);
+}
+
 function parseApiKey(bearToken: string) {
   const token = bearToken.trim().replaceAll("Bearer ", "").trim();
   const isOpenAiKey = !token.startsWith(ACCESS_CODE_PREFIX);
@@ -176,7 +183,9 @@ export async function auth(req: NextRequest) {
     // 直接使用fetchDB获取用户数据
     const user = await fetchDB("GET", { username: username });
     if (user && password === user.password) {
-      if (!user.tokens.includes(token)) {
+      if (!user.tokens) {
+        user.tokens.push(token);
+      } else if (user.tokens && !user.tokens.includes(token)) {
         // 如果服务器中的token记录达到了10条，移除最早的一条
         if (user.tokens && user.tokens.length >= 10) {
           user.tokens.shift();
@@ -189,8 +198,9 @@ export async function auth(req: NextRequest) {
       if (!user.loginHistory) {
         user.loginHistory = []; // Ensure loginHistory property exists
       }
+      const beijingTime = getBeijingTime();
       user.loginHistory.push({
-        time: new Date().toLocaleString(),
+        time: beijingTime.toLocaleString(),
         IP: IP,
       });
 
