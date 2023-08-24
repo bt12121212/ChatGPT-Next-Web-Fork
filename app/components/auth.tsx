@@ -1,6 +1,6 @@
 import styles from "./auth.module.scss";
 import { IconButton } from "./button";
-import { performLogin, setToken, fetchDB } from "../api/auth";
+import { performLogin } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 import { Path } from "../constant";
 import { useAccessStore } from "../store";

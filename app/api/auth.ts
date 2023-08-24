@@ -112,11 +112,10 @@ export async function performLogin(username: string, password: string) {
 
   // 判断user是否存在，并且传入的密码是否与存储在数据库中的密码匹配
   if (user && password === user.password) {
-    const token = await setToken(username);
     const storageUser = {
       username: username,
       password: password,
-      token: token,
+      token: setToken(username),
     };
     return { valid: true, user: JSON.stringify(storageUser) }; // 在这里，我们返回了user 用户名和token的JSON.stringify
   } else {
@@ -126,7 +125,7 @@ export async function performLogin(username: string, password: string) {
 
 export async function setToken(username: string) {
   const token = md5.hash(new Date().toISOString() + username);
-  return { token: token };
+  return token;
 }
 
 export async function auth(req: NextRequest) {
@@ -172,18 +171,19 @@ export async function auth(req: NextRequest) {
 
   if (accUserInfo) {
     // 解析accUserInfo以获取用户名、密码和token
-    const { username, password } = JSON.parse(accUserInfo);
+    const { username, password, token } = JSON.parse(accUserInfo);
 
     // 直接使用fetchDB获取用户数据
     const user = await fetchDB("GET", { username: username });
-    const newtoken = setToken(username);
     if (user && password === user.password) {
-      if (user.tokens && user.tokens.length >= 10) {
-        user.tokens.shift();
-      } else if (!user.tokens) {
-        user.tokens = [];
+      if (!user.tokens.includes(token)) {
+        // 如果服务器中的token记录达到了10条，移除最早的一条
+        if (user.tokens && user.tokens.length >= 10) {
+          user.tokens.shift();
+        }
+        // 将用户的新token添加到服务器的token记录中
+        user.tokens.push(token);
       }
-      user.tokens.push(token);
 
       const IP = getIP(req);
       if (!user.loginHistory) {
