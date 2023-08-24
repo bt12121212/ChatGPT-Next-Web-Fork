@@ -191,6 +191,7 @@ export async function auth(req: NextRequest) {
           user.tokens.shift();
         }
         // 将用户的新token添加到服务器的token记录中
+        console.log(token);
         user.tokens.push(token);
       }
 
