@@ -185,6 +185,7 @@ export async function auth(req: NextRequest) {
     if (user && password === user.password) {
       if (!user.tokens) {
         user.tokens.push(token);
+        alert(token);
         console.log("[Auth1] token：", token);
       } else if (user.tokens && !user.tokens.includes(token)) {
         // 如果服务器中的token记录达到了10条，移除最早的一条
@@ -195,6 +196,7 @@ export async function auth(req: NextRequest) {
         console.log(token);
         user.tokens.push(token);
       }
+      alert(token);
       console.log("[Auth2] token：", token);
       const IP = getIP(req);
       if (!user.loginHistory) {
