@@ -23,8 +23,9 @@ export function AuthPage() {
   // 登录逻辑函数
   const handleLogin = async (username: string, password: string) => {
     try {
-      const userData = await performLogin(username, md5.hash(password)); //返回用户名和token的JSON.stringify
+      const userData = await performLogin(username, md5.hash(password)); //返回用户名&密码&token的JSON.stringify
       if (userData.valid && userData.user) {
+        access.updateUserinfo(userData.user);
         localStorage.setItem("userData", userData.user);
         alert("欢迎登录尊闻行知");
         goHome();

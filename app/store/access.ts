@@ -19,7 +19,7 @@ export interface AccessControlStore {
 
   updateToken: (_: string) => void;
   updateCode: (_: string) => void;
-  updateUser: (_: string) => void;
+  updateUserinfo: (_: string) => void;
   updateOpenAiUrl: (_: string) => void;
   enabledAccessControl: () => boolean;
   isAuthorized: () => boolean;
@@ -54,9 +54,9 @@ export const useAccessStore = create<AccessControlStore>()(
         set(() => ({ accessCode: code?.trim() }));
       },
 
-      updateUser(user: string) {
+      updateUserinfo(userinfo: string) {
         //新增用户登录
-        set(() => ({ accuserinfo: user?.trim() }));
+        set(() => ({ accuserinfo: userinfo?.trim() }));
       },
 
       updateToken(token: string) {
