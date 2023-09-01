@@ -148,33 +148,6 @@ export async function auth(req: NextRequest) {
   console.log("[User IP] ", getIP(req));
   console.log("[Time] ", new Date().toLocaleString());
   console.log("[Auth] Accuserinfo:", accUserInfo);
-  /*       8.24在增加用户名的授权
-   if (accUserInfo) {
-    const { username, password } = JSON.parse(accUserInfo);
-    thisuser =
-    if (newuser.tokens && newuser.tokens.length >= 10) {
-      newuser.tokens.shift();
-    } else if (!newuser.tokens) {
-      newuser.tokens = [];
-    }
-    newuser.tokens.push(token);
-
-    const IP = getIP(req);
-    if (!newuser.loginHistory) {
-      newuser.loginHistory = []; // Ensure loginHistory property exists
-    }
-    newuser.loginHistory.push({
-      time: new Date().toLocaleString(),
-      IP: IP,
-    });
-
-    try {
-      await fetchDB("SET", JSON.stringify(newuser));
-    } catch (error: any) {
-      console.error("token上传失败");
-    }
-  }
-*/
 
   if (accUserInfo) {
     // 解析accUserInfo以获取用户名、密码和token
@@ -207,7 +180,23 @@ export async function auth(req: NextRequest) {
         await fetchDB("SET", user);
       } catch (error: any) {
         console.error("token上传失败");
+        return {
+          error: true,
+          msg: "token上传失败",
+        };
       }
+
+      const apiKey = serverConfig.apiKey;
+      if (apiKey) {
+        console.log("[Auth] use system api key");
+        req.headers.set("Authorization", `Bearer ${apiKey}`);
+      } else {
+        console.log("[Auth] admin did not provide an api key");
+      }
+
+      return {
+        error: false, //完成用户名登录
+      };
     } else {
       return { error: true, msg: "用户数据错误" };
     }
@@ -219,6 +208,12 @@ export async function auth(req: NextRequest) {
     return {
       error: true,
       msg: !accessCode ? "empty access code" : "wrong access code",
+    };
+  }
+
+  if (!accUserInfo) {
+    return {
+      error: true,
     };
   }
 
