@@ -31,10 +31,14 @@ export function AuthPage() {
         goHome();
       } else {
         alert("用户名或密码错误");
+        access.updateUserinfo("");
+        localStorage.removeItem("userData");
       }
     } catch (error: any) {
       console.error("登录失败:", error.msg || error);
       alert("登录失败");
+      access.updateUserinfo("");
+      localStorage.removeItem("userData");
     }
   };
 
