@@ -867,8 +867,8 @@ function _Chat() {
 
     //测试accessStore
     if (!accessStore.isAuthorized()) {
-      copiedHello.content = Locale.Error.Unauthorized;
       localStorage.clear();
+      copiedHello.content = Locale.Error.Unauthorized;
     }
     context.push(copiedHello);
   }

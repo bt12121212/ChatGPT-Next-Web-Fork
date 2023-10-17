@@ -28,7 +28,6 @@ export function AuthPage() {
         access.updateUserinfo(userData.user);
         localStorage.setItem("userData", userData.user);
         alert("欢迎登录尊闻行知");
-        localStorage.clear();
         goHome();
       } else {
         alert("用户名或密码错误");
