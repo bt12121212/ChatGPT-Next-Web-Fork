@@ -1,6 +1,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { DEFAULT_API_HOST, DEFAULT_MODELS, StoreKey } from "../constant";
+import {
+  DEFAULT_API_HOST,
+  DEFAULT_MODELS,
+  StoreKey,
+  DIV_VERSION,
+} from "../constant";
 import { getHeaders } from "../client/api";
 import { BOT_HELLO } from "./chat";
 import { getClientConfig } from "../config/client";
@@ -67,6 +72,18 @@ export const useAccessStore = create<AccessControlStore>()(
       },
       isAuthorized() {
         get().fetch();
+        if (DIV_VERSION !== 20231017) {
+          localStorage.clear();
+          sessionStorage.clear();
+          document.cookie.split(";").forEach(function (c) {
+            document.cookie = c
+              .replace(/^ +/, "")
+              .replace(
+                /=.*/,
+                "=;expires=" + new Date().toUTCString() + ";path=/",
+              );
+          });
+        }
 
         // has token or has code or disabled access control
         return (

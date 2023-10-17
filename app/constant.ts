@@ -9,6 +9,8 @@ export const FETCH_TAG_URL = `https://api.github.com/repos/${OWNER}/${REPO}/tags
 export const RUNTIME_CONFIG_DOM = "danger-runtime-config";
 export const DEFAULT_API_HOST = "https://chatgpt1.nextweb.fun/api/proxy";
 
+export const DIV_VERSION = 20231017;
+
 export enum Path {
   Home = "/",
   Chat = "/chat",

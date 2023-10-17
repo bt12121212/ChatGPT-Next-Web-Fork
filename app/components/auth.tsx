@@ -28,17 +28,20 @@ export function AuthPage() {
         access.updateUserinfo(userData.user);
         localStorage.setItem("userData", userData.user);
         alert("欢迎登录尊闻行知");
+        localStorage.clear();
         goHome();
       } else {
         alert("用户名或密码错误");
         access.updateUserinfo("");
         localStorage.removeItem("userData");
+        localStorage.clear();
       }
     } catch (error: any) {
       console.error("登录失败:", error.msg || error);
       alert("登录失败");
       access.updateUserinfo("");
       localStorage.removeItem("userData");
+      localStorage.clear();
     }
   };
 
