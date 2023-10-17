@@ -25,6 +25,7 @@ export function AuthPage() {
     try {
       const userData = await performLogin(username, md5.hash(password)); //返回用户名&密码&token的JSON.stringify
       if (userData.valid && userData.user) {
+        localStorage.clear();
         access.updateUserinfo(userData.user);
         localStorage.setItem("userData", userData.user);
         alert("欢迎登录尊闻行知");
