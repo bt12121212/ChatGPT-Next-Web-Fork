@@ -44,7 +44,7 @@ async function aliCheck(
   const body = new URLSearchParams();
   body.append("Service", "ai_art_detection");
   body.append("ServiceParameters", JSON.stringify({ content, accountId }));
-
+  body.append("SourceIp", "211.93.8.150");
   const response = await fetch(ALIYUN_API_URL, {
     method: "POST",
     headers: {
