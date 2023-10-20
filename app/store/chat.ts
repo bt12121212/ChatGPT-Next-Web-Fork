@@ -18,6 +18,8 @@ import { prettyObject } from "../utils/format";
 import { estimateTokenLength } from "../utils/token";
 import { nanoid } from "nanoid";
 
+import { checkSensitiveWords } from "../client/platforms/chatSensitive";
+
 export type ChatMessage = RequestMessage & {
   date: string;
   streaming?: boolean;
@@ -313,10 +315,14 @@ export const useChatStore = create<ChatStore>()(
         api.llm.chat({
           messages: sendMessages,
           config: { ...modelConfig, stream: true },
-          onUpdate(message) {
+          onUpdate: async (message) => {
             botMessage.streaming = true;
             if (message) {
-              botMessage.content = message;
+              botMessage.content = await checkSensitiveWords(
+                message,
+                "1654080943651748",
+              );
+              //botMessage.content = message;
             }
             get().updateCurrentSession((session) => {
               session.messages = session.messages.concat();
