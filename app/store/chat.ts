@@ -18,9 +18,6 @@ import { prettyObject } from "../utils/format";
 import { estimateTokenLength } from "../utils/token";
 import { nanoid } from "nanoid";
 
-import { checkSensitiveWords } from "../api/ali/chatSensitive";
-import { Console } from "console";
-
 async function fetchCheckSensitiveWords(content: string) {
   const userData = localStorage.getItem("userData");
   let username = "";
@@ -33,7 +30,7 @@ async function fetchCheckSensitiveWords(content: string) {
       console.error("localStorage中不存在userData", error);
     }
   }
-  const response = await fetch("/api/checkSensitive", {
+  const response = await fetch("/api/checkContent", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
