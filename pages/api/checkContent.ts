@@ -1,12 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { checkSensitiveWords } from "../../app/api/ali/chatSensitive";
+import { getServerSideConfig } from "../../app/config/server";
 
-//import { checkSensitiveWords } from "../../app/api/ali/chatSensitive";
-//import { getServerSideConfig } from "../config/server";
-
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  res.status(200).json({ message: "Hello World" });
-}
-/*
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
@@ -31,5 +26,10 @@ export default async function handler(
       res.status(405).json({ error: "Method not allowed" });
     }
   }
+}
+
+/*
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  res.status(200).json({ message: "Hello World" });
 }
 */
