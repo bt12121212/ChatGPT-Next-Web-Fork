@@ -320,7 +320,6 @@ export const useChatStore = create<ChatStore>()(
             if (message) {
               botMessage.content = await checkSensitiveWords(
                 message,
-                "1654080943651748",
                 "LTAI5tQsjuT3bLwabGrriAYD",
                 "9oDhHnxlDpY6sZWc2o47K2EtQQj8p7",
               );
