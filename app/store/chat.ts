@@ -18,7 +18,31 @@ import { prettyObject } from "../utils/format";
 import { estimateTokenLength } from "../utils/token";
 import { nanoid } from "nanoid";
 
-import { checkSensitiveWords } from "../api/chatSensitive";
+import { checkSensitiveWords } from "../api/ali/chatSensitive";
+
+async function fetchCheckSensitiveWords(content: string) {
+  const userData = localStorage.getItem("userData");
+  let username = "";
+  // 尝试解析存储的userData
+  if (userData) {
+    try {
+      const parsedData = JSON.parse(userData);
+      username = parsedData.username || "";
+    } catch (error) {
+      console.error("localStorage中不存在userData", error);
+    }
+  }
+  const response = await fetch("/api/checkSensitive", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ content, username }),
+  });
+
+  const data = await response.json();
+  return data.result;
+}
 
 export type ChatMessage = RequestMessage & {
   date: string;
@@ -318,11 +342,7 @@ export const useChatStore = create<ChatStore>()(
           onUpdate: async (message) => {
             botMessage.streaming = true;
             if (message) {
-              botMessage.content = await checkSensitiveWords(
-                message,
-                "LTAI5tQsjuT3bLwabGrriAYD",
-                "9oDhHnxlDpY6sZWc2o47K2EtQQj8p7",
-              );
+              botMessage.content = await fetchCheckSensitiveWords(message);
               //botMessage.content = message;
             }
             get().updateCurrentSession((session) => {
