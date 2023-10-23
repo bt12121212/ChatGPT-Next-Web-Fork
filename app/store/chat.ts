@@ -30,13 +30,16 @@ async function fetchCheckSensitiveWords(content: string) {
       console.error("localStorage中不存在userData", error);
     }
   }
-  const response = await fetch("/api/checkContent", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+  const response = await fetch(
+    "https://test-branch-production.up.railway.app/api/checkContent",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ content, username }),
     },
-    body: JSON.stringify({ content, username }),
-  });
+  );
 
   const data = await response.json();
   return data.result;
