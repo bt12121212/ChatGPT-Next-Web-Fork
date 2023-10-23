@@ -18,7 +18,7 @@ import { prettyObject } from "../utils/format";
 import { estimateTokenLength } from "../utils/token";
 import { nanoid } from "nanoid";
 
-import { checkSensitiveWords } from "../client/platforms/chatSensitive";
+import { checkSensitiveWords } from "../api/chatSensitive";
 
 export type ChatMessage = RequestMessage & {
   date: string;

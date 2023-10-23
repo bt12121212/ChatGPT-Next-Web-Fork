@@ -39,8 +39,8 @@ export async function checkSensitiveWords(
     );
     if (response.Code === 500) {
       client = new RPCClient({
-        accessKeyId: process.env["ALIBABA_CLOUD_ACCESS_KEY_ID"],
-        accessKeySecret: process.env["ALIBABA_CLOUD_ACCESS_KEY_SECRET"],
+        accessKeyId: ALI_ACCESS_KEY_ID,
+        accessKeySecret: ALI_ACCESS_SECRET,
         endpoint: "https://green-cip.cn-beijing.aliyuncs.com",
         apiVersion: "2022-03-02",
       });
