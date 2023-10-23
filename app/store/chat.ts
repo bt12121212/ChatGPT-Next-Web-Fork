@@ -31,7 +31,7 @@ async function fetchCheckSensitiveWords(content: string) {
     }
   }
   const response = await fetch(
-    "https://test-branch-production.up.railway.app/api/checkContent",
+    "https://test-branch-production.up.railway.app/#/api/checkContent",
     {
       method: "POST",
       headers: {
