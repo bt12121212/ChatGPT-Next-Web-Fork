@@ -19,6 +19,7 @@ import { estimateTokenLength } from "../utils/token";
 import { nanoid } from "nanoid";
 
 import { checkSensitiveWords } from "../api/ali/chatSensitive";
+import { Console } from "console";
 
 async function fetchCheckSensitiveWords(content: string) {
   const userData = localStorage.getItem("userData");
@@ -342,17 +343,18 @@ export const useChatStore = create<ChatStore>()(
           onUpdate: async (message) => {
             botMessage.streaming = true;
             if (message) {
-              botMessage.content = await fetchCheckSensitiveWords(message);
-              //botMessage.content = message;
+              //botMessage.content = await fetchCheckSensitiveWords(message);
+              botMessage.content = message;
             }
             get().updateCurrentSession((session) => {
               session.messages = session.messages.concat();
             });
           },
-          onFinish(message) {
+          onFinish: async (message) => {
             botMessage.streaming = false;
             if (message) {
               botMessage.content = message;
+              console.log(await fetchCheckSensitiveWords(message));
               get().onNewMessage(botMessage);
             }
             ChatControllerPool.remove(session.id, botMessage.id);
