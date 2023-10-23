@@ -196,9 +196,6 @@ async function aliCheck(
     "x-acs-signature-version": "1.0",
     "x-acs-signature-method": "HMAC-SHA1",
   };
-  accountId = "1654080943651748";
-  ALI_ACCESS_KEY_ID = "LTAI5tQsjuT3bLwabGrriAYD";
-  ALI_ACCESS_SECRET = "9oDhHnxlDpY6sZWc2o47K2EtQQj8p7";
 
   headers["Authorization"] =
     "acs " +
