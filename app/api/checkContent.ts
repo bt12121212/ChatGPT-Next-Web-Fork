@@ -1,7 +1,12 @@
-import { checkSensitiveWords } from "../../app/api/ali/chatSensitive";
 import { NextApiRequest, NextApiResponse } from "next";
-import { getServerSideConfig } from "../config/server";
 
+//import { checkSensitiveWords } from "../../app/api/ali/chatSensitive";
+//import { getServerSideConfig } from "../config/server";
+
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  res.status(200).json({ message: "Hello World" });
+}
+/*
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
@@ -27,3 +32,4 @@ export default async function handler(
     }
   }
 }
+*/
