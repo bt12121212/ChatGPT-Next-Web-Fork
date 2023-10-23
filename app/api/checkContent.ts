@@ -2,9 +2,6 @@ import { checkSensitiveWords } from "../../app/api/ali/chatSensitive";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSideConfig } from "../config/server";
 
-const ALI_ACCESS_KEY_ID = "LTAI5tQsjuT3bLwabGrriAYD";
-const ALI_ACCESS_SECRET = "9oDhHnxlDpY6sZWc2o47K2EtQQj8p7";
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
