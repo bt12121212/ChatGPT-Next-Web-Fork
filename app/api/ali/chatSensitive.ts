@@ -59,8 +59,13 @@ export async function checkSensitiveWords(
       return content;
     }
   } catch (err) {
-    console.log(err);
-    console.log("敏感词检测失败。");
+    console.log(
+      "敏感词检测失败。" +
+        "response.Code:" +
+        response.Code +
+        ", client:" +
+        client,
+    );
     return content;
   }
 }
