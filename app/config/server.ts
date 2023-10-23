@@ -15,6 +15,9 @@ declare global {
       HIDE_BALANCE_QUERY?: string; // allow user to query balance or not
       USER_DB_URL?: string; //用户数据库url
       USER_DB_TOKEN?: string; //用户数据库token
+
+      ALI_AI_CONTENT_ID?: string;
+      ALI_AI_CONTENT_KEY?: string;
     }
   }
 }
@@ -56,5 +59,8 @@ export const getServerSideConfig = () => {
     dbUrl:
       process.env.USER_DB_URL ||
       "https://native-chow-30493.kv.vercel-storage.com/", // 如果环境变量不存在，使用默认值
+
+    aliContentID: process.env.ALI_AI_CONTENT_ID,
+    aliContentKEY: process.env.ALI_AI_CONTENT_KEY,
   };
 };

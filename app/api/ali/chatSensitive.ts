@@ -8,7 +8,7 @@ export async function checkSensitiveWords(
   var client = new RPCClient({
     AccessKeyId: ALI_ACCESS_KEY_ID,
     AccessKeySecret: ALI_ACCESS_SECRET,
-    endpoint: "https://green-cip.cn-shanghai.aliyuncs.com",
+    endpoint: "https://green-cip.cn-beijing.aliyuncs.com",
     apiVersion: "2022-03-02",
   });
 
