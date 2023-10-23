@@ -10,6 +10,7 @@ export default async function handler(
   if (!SERVER_CONFIG.aliContentID || !SERVER_CONFIG.aliContentKEY) {
     throw new Error("内容检测API信息获取失败。");
   } else {
+    console.log("内容检测API读取成功！ ID：" + SERVER_CONFIG.aliContentID);
     if (req.method === "POST") {
       try {
         const content = req.body;
@@ -18,9 +19,11 @@ export default async function handler(
           SERVER_CONFIG.aliContentID,
           SERVER_CONFIG.aliContentKEY,
         );
+        
         res.status(200).json(result);
-      } catch (error) {
-        res.status(500).json({ error: "Server Error" });
+      } catch (error:any) {
+        console.error("Error handling checkContent:", error);
+        res.status(500).json({ error: `Server Error: ${error.message}` });
       }
     } else {
       res.status(405).json({ error: "Method not allowed" });
