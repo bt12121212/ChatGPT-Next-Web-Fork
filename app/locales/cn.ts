@@ -4,7 +4,7 @@ const cn = {
   WIP: "该功能仍在开发中……",
   Error: {
     Unauthorized:
-      "访问密码不正确或为空，请前往>[登录](/#/auth)<页输入正确的访问密码",
+      "访问密码不正确或为空，请前往>[登录](/#/auth)<页输入正确的访问密码。如无法登录请OA联系滕飞。",
   },
   Auth: {
     Title: "需要密码",
@@ -260,7 +260,8 @@ const cn = {
   },
   Store: {
     DefaultTopic: "新的聊天",
-    BotHello: "有什么可以帮你的吗",
+    BotHello:
+      "更新通知：对话已接入阿里云内容审查，如检出敏感词会后台保存对话。",
     Error: "出错了，稍后重试吧",
     Prompt: {
       History: (content: string) => "这是历史聊天总结作为前情提要：" + content,

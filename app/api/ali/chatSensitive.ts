@@ -52,16 +52,10 @@ export async function checkSensitiveWords(
     }
 
     if (response.Code === 200 && response.Data.labels === "") {
+      //console.log("未检出敏感词。");
       return { content, response };
-      console.log("未检出敏感词。");
     } else {
-      console.log(
-        "发现违规内容：" +
-          response.Data.labels +
-          "。问题内容：" +
-          response.Data.reason,
-      );
-
+      //console.log("发现违规内容：" +response.Data.labels +"。问题内容：" +response.Data.reason,);
       return { content, response };
     }
   } catch (err) {

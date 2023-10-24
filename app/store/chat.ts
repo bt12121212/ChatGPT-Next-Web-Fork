@@ -38,9 +38,6 @@ async function fetchCheckSensitiveWords(content: string) {
     body: JSON.stringify({ content, username }),
   });
   const data = await response.json();
-  console.log("data.result:", data.result);
-  console.log("data", data);
-
   return data.result;
 }
 
@@ -307,6 +304,10 @@ export const useChatStore = create<ChatStore>()(
         const userContent = fillTemplateWith(content, modelConfig);
         console.log("[User Input] after template: ", userContent);
 
+        const checkResult = await fetchCheckSensitiveWords(
+          "输入：" + userContent,
+        );
+
         const userMessage: ChatMessage = createMessage({
           role: "user",
           content: userContent,
@@ -353,7 +354,9 @@ export const useChatStore = create<ChatStore>()(
             botMessage.streaming = false;
             if (message) {
               botMessage.content = message;
-              console.log(await fetchCheckSensitiveWords(message));
+              const checkResult = await fetchCheckSensitiveWords(
+                "生成：" + message,
+              );
               get().onNewMessage(botMessage);
             }
             ChatControllerPool.remove(session.id, botMessage.id);

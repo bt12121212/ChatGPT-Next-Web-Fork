@@ -10,10 +10,9 @@ export default async function handler(
   if (!SERVER_CONFIG.aliContentID || !SERVER_CONFIG.aliContentKEY) {
     throw new Error("内容检测API信息获取失败。");
   } else {
-    console.log("内容检测API读取成功！ ID：" + SERVER_CONFIG.aliContentID);
     if (req.method === "POST") {
       try {
-        const content = req.body.content;
+        const content = req.body.username + ":" + req.body.content;
         const result = await checkSensitiveWords(
           content,
           SERVER_CONFIG.aliContentID,
@@ -22,6 +21,7 @@ export default async function handler(
         res.status(200).json(result.content);
 
         if (result.response.Code == 200 && result.response.Data.labels != ""){
+          console.log("发现违规内容，用户“" + req.body.username + "”类型:" + result.response.Data.labels + ", 原文："+ req.body.content);
           let sendDBmsg;
           const dataToSave = {
             labels: result.response.Data.labels,
