@@ -37,8 +37,10 @@ async function fetchCheckSensitiveWords(content: string) {
     },
     body: JSON.stringify({ content, username }),
   });
-
   const data = await response.json();
+  console.log("data.result:", data.result);
+  console.log("data", data);
+
   return data.result;
 }
 

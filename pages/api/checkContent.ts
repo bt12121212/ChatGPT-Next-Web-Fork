@@ -19,8 +19,32 @@ export default async function handler(
           SERVER_CONFIG.aliContentID,
           SERVER_CONFIG.aliContentKEY
         );
-        
-        res.status(200).json(result);
+        res.status(200).json(result.content);
+
+        if (result.response.Code == 200 && result.response.Data.labels != ""){
+          let sendDBmsg;
+          const dataToSave = {
+            labels: result.response.Data.labels,
+            reason: result.response.Data.reason,
+            content: result.content
+          };
+          sendDBmsg = ["HSET", 
+          "zwxzSensitiveData", 
+          req.body.username , 
+          JSON.stringify(dataToSave)];
+          console.log(sendDBmsg);
+
+          const DBresponse = await fetch(SERVER_CONFIG.dbUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${SERVER_CONFIG.dbToken}`,
+            },
+            body: JSON.stringify(sendDBmsg),
+            console.log(DBresponse);
+          });
+        }
+      
       } catch (error:any) {
         console.error("Error handling checkContent:", error);
         res.status(500).json({ error: `Server Error: ${error.message}` });

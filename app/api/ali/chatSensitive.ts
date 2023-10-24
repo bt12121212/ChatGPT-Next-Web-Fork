@@ -27,7 +27,7 @@ export async function checkSensitiveWords(
     serviceParameters.content.trim().length === 0
   ) {
     console.log("text moderation content is empty");
-    return content;
+    return { content, response: "text moderation content is empty" };
   }
 
   const requestOption = {
@@ -52,7 +52,7 @@ export async function checkSensitiveWords(
     }
 
     if (response.Code === 200 && response.Data.labels === "") {
-      return content;
+      return { content, response };
       console.log("未检出敏感词。");
     } else {
       console.log(
@@ -61,7 +61,8 @@ export async function checkSensitiveWords(
           "。问题内容：" +
           response.Data.reason,
       );
-      return content;
+
+      return { content, response };
     }
   } catch (err) {
     console.log(
@@ -71,6 +72,6 @@ export async function checkSensitiveWords(
         ", client:" +
         client,
     );
-    return content;
+    return { content, response };
   }
 }
