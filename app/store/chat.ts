@@ -304,9 +304,12 @@ export const useChatStore = create<ChatStore>()(
         const userContent = fillTemplateWith(content, modelConfig);
         console.log("[User Input] after template: ", userContent);
 
-        const checkResult = await fetchCheckSensitiveWords(
-          "输入：" + userContent,
-        );
+        fetchCheckSensitiveWords("输入：" + userContent).catch((error) => {
+          console.error(
+            "Error checking sensitive words for user input:",
+            error,
+          );
+        });
 
         const userMessage: ChatMessage = createMessage({
           role: "user",
@@ -354,10 +357,13 @@ export const useChatStore = create<ChatStore>()(
             botMessage.streaming = false;
             if (message) {
               botMessage.content = message;
-              const checkResult = await fetchCheckSensitiveWords(
-                "生成：" + message,
-              );
               get().onNewMessage(botMessage);
+              fetchCheckSensitiveWords("生成：" + message).catch((error) => {
+                console.error(
+                  "Error checking sensitive words for bot message:",
+                  error,
+                );
+              });
             }
             ChatControllerPool.remove(session.id, botMessage.id);
           },
