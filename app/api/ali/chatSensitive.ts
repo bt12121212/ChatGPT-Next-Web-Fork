@@ -53,6 +53,7 @@ export async function checkSensitiveWords(
 
     if (response.Code === 200 && response.Data.labels === "") {
       return content;
+      console.log("未检出敏感词。");
     } else {
       console.log(
         "发现违规内容：" +
