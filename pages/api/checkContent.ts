@@ -41,8 +41,8 @@ export default async function handler(
               Authorization: `Bearer ${SERVER_CONFIG.dbToken}`,
             },
             body: JSON.stringify(sendDBmsg),
-            console.log(DBresponse);
           });
+          console.log(DBresponse);
         }
       
       } catch (error:any) {
