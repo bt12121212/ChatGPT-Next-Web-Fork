@@ -17,7 +17,11 @@ export async function checkSensitiveWords(
     ServiceParameters: JSON.stringify({ content }),
   };
 
+  console.log("Type of content:", typeof content);
+  console.log("Value of content:", content);
+
   const serviceParameters = JSON.parse(params.ServiceParameters);
+
   if (
     !serviceParameters.hasOwnProperty("content") ||
     serviceParameters.content.trim().length === 0

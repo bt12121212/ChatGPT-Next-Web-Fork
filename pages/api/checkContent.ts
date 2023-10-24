@@ -13,11 +13,11 @@ export default async function handler(
     console.log("内容检测API读取成功！ ID：" + SERVER_CONFIG.aliContentID);
     if (req.method === "POST") {
       try {
-        const content = req.body;
+        const content = req.body.content;
         const result = await checkSensitiveWords(
           content,
           SERVER_CONFIG.aliContentID,
-          SERVER_CONFIG.aliContentKEY,
+          SERVER_CONFIG.aliContentKEY
         );
         
         res.status(200).json(result);
