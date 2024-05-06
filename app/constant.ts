@@ -152,7 +152,7 @@ const openaiModels = [
 const googleModels = [
   //"gemini-1.0-pro",
   //"gemini-1.5-pro-latest",
-  //"gemini-pro-vision",
+  "gemini-pro-vision",
 ];
 
 const anthropicModels = [
@@ -161,7 +161,7 @@ const anthropicModels = [
   //"claude-2.1",
   //"claude-3-sonnet-20240229",
   //"claude-3-opus-20240229",
-  //"claude-3-haiku-20240307",
+  "claude-3-haiku-20240307",
 ];
 
 export const DEFAULT_MODELS = [
@@ -176,7 +176,7 @@ export const DEFAULT_MODELS = [
   })),
   ...googleModels.map((name) => ({
     name,
-    available: true,
+    available: false,
     provider: {
       id: "google",
       providerName: "Google",
@@ -185,7 +185,7 @@ export const DEFAULT_MODELS = [
   })),
   ...anthropicModels.map((name) => ({
     name,
-    available: true,
+    available: false,
     provider: {
       id: "anthropic",
       providerName: "Anthropic",
