@@ -379,7 +379,7 @@ const cn = {
   },
   Store: {
     DefaultTopic: "新的聊天",
-    BotHello: "有什么可以帮你的吗",
+    BotHello: "更新通知：平台已支持GPT4，请在聊天框上方设置切换GPT3.5-GPT4。为防止系统盗用，服务器会存储GPT4模型的对话记录，请注意。",
     Error: "出错了，稍后重试吧",
     Prompt: {
       History: (content: string) => "这是历史聊天总结作为前情提要：" + content,
