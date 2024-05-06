@@ -138,7 +138,7 @@ function getBeijingTime() {
 }
 
 
-export async function auth(req: NextRequest, modelProvider: ModelProvider) {
+export async function auth(req: NextRequest, modelProvider: ModelProvider): Promise<{ error: boolean; msg?: string } | undefined>  {
   const authToken = req.headers.get("Authorization") ?? "";
   const { accessCode, apiKey: token, accUserInfo } = parseApiKey(authToken);
 
