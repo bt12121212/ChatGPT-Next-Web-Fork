@@ -185,7 +185,7 @@ export async function auth(req: NextRequest, modelProvider: ModelProvider) {
         console.error("token上传失败");
         return {
           error: true,
-          msg: "token上传失败",
+          msg: "token上传失败" ? "empty access code" : "wrong access code",
         };
       }
 
@@ -232,6 +232,7 @@ export async function auth(req: NextRequest, modelProvider: ModelProvider) {
   if (!accUserInfo) {
     return {
       error: true,
+      msg: !accessCode ? "empty access code" : "wrong access code",
     };
   }
 
