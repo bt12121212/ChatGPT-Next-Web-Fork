@@ -50,6 +50,9 @@ const DEFAULT_ACCESS_STATE = {
   disableFastLink: false,
   customModels: "",
   defaultModel: "",
+
+  //用户登录
+  accuserinfo: "", //JSON.stringify(user,password,token)
 };
 
 export const useAccessStore = createPersistStore(
@@ -60,6 +63,11 @@ export const useAccessStore = createPersistStore(
       this.fetch();
 
       return get().needCode;
+    },
+
+    updateUserinfo(userinfo: string) {
+      //新增用户登录
+      set(() => ({ accuserinfo: userinfo?.trim() }));
     },
 
     isValidOpenAI() {
