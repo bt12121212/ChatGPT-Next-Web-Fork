@@ -34,6 +34,12 @@ declare global {
 
       // google tag manager
       GTM_ID?: string;
+
+      USER_DB_URL?: string; //用户数据库url
+      USER_DB_TOKEN?: string; //用户数据库token
+      XFYUN_APPID?: string;
+      XFYUN_APISECRET?: string;
+      XFYUN_APIKEY?: string; //讯飞api
     }
   }
 }
@@ -121,5 +127,15 @@ export const getServerSideConfig = () => {
     customModels,
     defaultModel,
     whiteWebDevEndpoints,
+
+    dbToken:
+    process.env.USER_DB_TOKEN ||
+    "AXcdASQgN2NkNGQyMzYtYjE5Mi00NGZmLWIxODItNmMyNzg3MjgxOWQwNzE5Zjk3ZjMyOWNhNDkyMmE0MWUzYTY1MTUxNjI5MjY=", // 如果环境变量不存在，使用默认值
+  dbUrl:
+    process.env.USER_DB_URL ||
+    "https://native-chow-30493.kv.vercel-storage.com/", // 如果环境变量不存在，使用默认值
+  xfyunAppid: process.env.XFYUN_APPID || "d7bfcdb7",
+  xfyunApiSecret: process.env.XFYUN_APISECRET || "mM0NGVhNDljNDQ2MGUwYjk3NmM1Nzc5",
+  xfyunApikey: process.env.XFYUN_APIKEY || "0884125412850b1ad69580f984266965"
   };
 };
