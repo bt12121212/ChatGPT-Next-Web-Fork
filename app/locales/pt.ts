@@ -16,6 +16,8 @@ const pt: PartialLocaleType = {
     Tips: "Por favor, insira o código de acesso abaixo",
     SubTips: "Ou insira sua Chave API OpenAI",
     Input: "código de acesso",
+    InputPassword: "",
+    Inputusername: "",
     Confirm: "Confirmar",
     Later: "Depois",
   },

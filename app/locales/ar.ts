@@ -12,6 +12,8 @@ const ar: PartialLocaleType = {
     Tips: "يرجى إدخال رمز الوصول أدناه",
     SubTips: "أو أدخل مفتاح واجهة برمجة تطبيقات OpenAI الخاص بك",
     Input: "رمز الوصول",
+    InputPassword: "",
+    Inputusername: "",
     Confirm: "تأكيد",
     Later: "لاحقًا",
   },

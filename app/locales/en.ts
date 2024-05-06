@@ -17,6 +17,8 @@ const en: LocaleType = {
     Tips: "Please enter access code below",
     SubTips: "Or enter your OpenAI or Google API Key",
     Input: "access code",
+    InputPassword: "密码：",
+    Inputusername: "用户名：",
     Confirm: "Confirm",
     Later: "Later",
   },

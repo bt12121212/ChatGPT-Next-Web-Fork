@@ -18,6 +18,8 @@ const sk: PartialLocaleType = {
     Tips: "Prosím, zadajte prístupový kód nižšie",
     SubTips: "Alebo zadajte váš OpenAI alebo Google API kľúč",
     Input: "prístupový kód",
+    InputPassword: "",
+    Inputusername: "",
     Confirm: "Potvrdiť",
     Later: "Neskôr",
   },

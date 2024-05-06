@@ -16,6 +16,8 @@ const tw = {
     Tips: "管理員開啟了密碼驗證，請在下方填入存取密碼",
     SubTips: "或者輸入你的 OpenAI 或 Google API 金鑰",
     Input: "在此處填寫存取密碼",
+    InputPassword: "",
+    Inputusername: "",
     Confirm: "確認",
     Later: "稍候再說",
   },
