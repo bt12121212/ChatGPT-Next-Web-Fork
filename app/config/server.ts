@@ -94,7 +94,7 @@ export const getServerSideConfig = () => {
 
   return {
     baseUrl: process.env.BASE_URL,
-    apiKey,
+    apiKey: process.env.OPENAI_API_KEY,
     openaiOrgId: process.env.OPENAI_ORG_ID,
 
     isAzure,
@@ -121,7 +121,7 @@ export const getServerSideConfig = () => {
     isVercel: !!process.env.VERCEL,
 
     hideUserApiKey: !!process.env.HIDE_USER_API_KEY,
-    disableGPT4,
+    disableGPT4: !!process.env.DISABLE_GPT4,
     hideBalanceQuery: !process.env.ENABLE_BALANCE_QUERY,
     disableFastLink: !!process.env.DISABLE_FAST_LINK,
     customModels,
