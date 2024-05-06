@@ -1,6 +1,7 @@
 import { getClientConfig } from "../config/client";
 import {
   ACCESS_CODE_PREFIX,
+  ACCESS_USER_PREFIX,
   Azure,
   ModelProvider,
   ServiceProvider,
@@ -183,6 +184,13 @@ export function getHeaders() {
     ) {
       headers[authHeader] = makeBearer(
         ACCESS_CODE_PREFIX + accessStore.accessCode,
+      );
+    } else if (
+      //新增利用用户名密码登录
+      validString(accessStore.accuserinfo)
+    ) {
+      headers.Authorization = makeBearer(
+        ACCESS_USER_PREFIX + accessStore.accuserinfo,
       );
     }
   }

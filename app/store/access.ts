@@ -88,7 +88,7 @@ export const useAccessStore = createPersistStore(
 
     isAuthorized() {
       this.fetch();
-
+      const state = get();
       // has token or has code or disabled access control
       return (
         this.isValidOpenAI() ||
@@ -96,7 +96,8 @@ export const useAccessStore = createPersistStore(
         this.isValidGoogle() ||
         this.isValidAnthropic() ||
         !this.enabledAccessControl() ||
-        (this.enabledAccessControl() && ensure(get(), ["accessCode"]))
+        (this.enabledAccessControl() && ensure(get(), ["accessCode"])) ||
+        (state.accuserinfo && state.accuserinfo.length > 0)  // 检查accuserinfo是否有效
       );
     },
     fetch() {
