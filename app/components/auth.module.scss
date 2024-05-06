@@ -16,16 +16,31 @@
     line-height: 2;
   }
 
+  .auth-inputusername,
   .auth-inputpassword {
-    margin-bottom: 3vh;
-    margin-top: 1vh;
+    width: 80%;  /* 控制输入框的宽度，可以根据实际页面布局调整 */
+    padding: 10px 15px; /* 增加填充使输入更舒适 */
+    font-size: 16px; /* 字体大小适中，保证阅读舒适 */
+    border: 1px solid #ccc; /* 细边框，颜色不过于突兀 */
+    border-radius: 5px; /* 轻微的圆角 */
+    box-sizing: border-box; /* 包括padding和border在内的宽度总和 */
   }
-
+  .auth-inputusername:focus,
+  .auth-inputpassword:focus {
+  border-color: #4A90E2; /* 焦点时的边框颜色 */
+  box-shadow: 0 0 8px rgba(74, 144, 226, 0.5); /* 添加轻微的蓝色光晕效果 */
+  outline: none; /* 移除默认的聚焦轮廓 */
+  }
   .auth-inputusername {
     margin-top: 3vh;
     margin-bottom: 1vh;
   }
   
+  .auth-inputpassword {
+    margin-top: 1vh;
+    margin-bottom: 3vh;
+  }
+
   .auth-tips {
     font-size: 14px;
   }

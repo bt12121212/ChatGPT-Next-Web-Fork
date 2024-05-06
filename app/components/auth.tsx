@@ -60,7 +60,7 @@ export function AuthPage() {
         type="password"
         placeholder={Locale.Auth.InputPassword}
         value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        onChange={(e) => setPassword(e.target.value.trim())}
       />
 
       <div className={styles["auth-actions"]}>
