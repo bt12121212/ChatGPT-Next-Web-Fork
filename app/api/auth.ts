@@ -130,9 +130,15 @@ export async function setToken(username: string) {
   const token = md5.hash(new Date().toISOString() + username);
   return token;
 }
+function getBeijingTime() {
+  const now = new Date();
+  const offset = now.getTimezoneOffset() * 60 * 1000; // 获取当前时区偏移的毫秒数
+  const beijingOffset = 8 * 60 * 60 * 1000; // 北京时区偏移的毫秒数
+  return new Date(now.getTime() + offset + beijingOffset);
+}
 
 
-export async function auth(req: NextRequest) {
+export async function auth(req: NextRequest, modelProvider: ModelProvider) {
   const authToken = req.headers.get("Authorization") ?? "";
   const { accessCode, apiKey: token, accUserInfo } = parseApiKey(authToken);
 
@@ -183,6 +189,23 @@ export async function auth(req: NextRequest) {
         };
       }
 
+      let systemApiKey: string | undefined;
+
+      switch (modelProvider) {
+        case ModelProvider.GeminiPro:
+          systemApiKey = serverConfig.googleApiKey;
+          break;
+        case ModelProvider.Claude:
+          systemApiKey = serverConfig.anthropicApiKey;
+          break;
+        case ModelProvider.GPT:
+        default:
+          if (serverConfig.isAzure) {
+            systemApiKey = serverConfig.azureApiKey;
+          } else {
+            systemApiKey = serverConfig.apiKey;
+          }
+
       const apiKey = serverConfig.apiKey;
       if (apiKey) {
         console.log("[Auth] use system api key");
@@ -194,9 +217,7 @@ export async function auth(req: NextRequest) {
       return {
         error: false, //完成用户名登录
       };
-    } else {
-      return { error: true, msg: "用户数据错误" };
-    }
+    } 
   } else if (
     serverConfig.needCode &&
     !serverConfig.codes.has(hashedCode) &&
@@ -229,4 +250,5 @@ export async function auth(req: NextRequest) {
   return {
     error: false,
   };
+}
 }
