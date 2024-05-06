@@ -39,7 +39,7 @@ async function handle(
   }
 
   const authResult = await auth(req, ModelProvider.Claude);
-  if (authResult.error) {
+  if (authResult && authResult.error) {
     return NextResponse.json(authResult, {
       status: 401,
     });
