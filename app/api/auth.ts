@@ -205,6 +205,13 @@ export async function auth(req: NextRequest, modelProvider: ModelProvider): Prom
           } else {
             systemApiKey = serverConfig.apiKey;
           }
+      }
+      if (systemApiKey) {
+        console.log("[Auth] use system api key");
+        req.headers.set("Authorization", `Bearer ${systemApiKey}`);
+      } else {
+        console.log("[Auth] admin did not provide an api key");
+      }
 
       const apiKey = serverConfig.apiKey;
       if (apiKey) {
@@ -251,5 +258,4 @@ export async function auth(req: NextRequest, modelProvider: ModelProvider): Prom
   return {
     error: false,
   };
-}
 }
